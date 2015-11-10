@@ -1,0 +1,191 @@
+.datalasso-container {
+  background: #32303d;
+  width: 100%;
+  height: 100%;
+  position: relative;
+  z-index: 0;
+  overflow: hidden;
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.4; }
+  .datalasso-container .button {
+    width: 100%;
+    line-height: 2;
+    border: 0;
+    text-transform: uppercase;
+    font-weight: bold;
+    outline: none;
+    color: #dddddd; }
+    .datalasso-container .button.red {
+      background-color: #cc5d6d;
+      color: #32303d; }
+    .datalasso-container .button.black {
+      background-color: rgba(0, 0, 0, 0.1);
+      color: #dddddd; }
+
+.axis-controls {
+  position: absolute;
+  padding: 10px;
+  top: 130px;
+  left: 0;
+  z-index: 1;
+  width: 200px; }
+  .axis-controls .axis-label {
+    display: block;
+    color: #dddddd;
+    opacity: 0.5;
+    font-size: 11px;
+    text-transform: uppercase;
+    height: 14px;
+    margin: 5px; }
+  .axis-controls .axis-selector {
+    color: #dddddd;
+    border: 0;
+    padding: 4px;
+    background: rgba(0, 0, 0, 0.1);
+    width: 100%;
+    height: 28px; }
+  .axis-controls .button {
+    margin-top: 20px; }
+
+.datalasso-container {
+  background: #32303d;
+  width: 100%;
+  height: 100%;
+  position: relative;
+  z-index: 0;
+  overflow: hidden;
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.4; }
+  .datalasso-container .button {
+    width: 100%;
+    line-height: 2;
+    border: 0;
+    text-transform: uppercase;
+    font-weight: bold;
+    outline: none;
+    color: #dddddd; }
+    .datalasso-container .button.red {
+      background-color: #cc5d6d;
+      color: #32303d; }
+    .datalasso-container .button.black {
+      background-color: rgba(0, 0, 0, 0.1);
+      color: #dddddd; }
+
+.mode-indicator {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 10px;
+  pointer-events: none;
+  text-align: center;
+  line-height: 1.1;
+  color: #dddddd; }
+  .mode-indicator strong {
+    display: block; }
+  .mode-indicator .selection-mode {
+    color: #ddde12; }
+
+.uploader {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 200px;
+  padding: 10px;
+  z-index: 1; }
+  .uploader .toggles {
+    margin: 5px 0;
+    display: flex;
+    justify-content: center; }
+  .uploader .toggle {
+    flex: 1 0 auto; }
+    .uploader .toggle .filetype-label {
+      text-align: center;
+      display: block;
+      cursor: pointer;
+      width: 100%;
+      font-weight: bold;
+      background: rgba(0, 0, 0, 0.1);
+      color: #ddd; }
+    .uploader .toggle input:checked + .filetype-label {
+      background: rgba(0, 0, 0, 0.8);
+      color: #FFF; }
+    .uploader .toggle input {
+      display: none; }
+  .uploader .file-upload {
+    width: 100%;
+    padding: 4px 0;
+    height: auto;
+    line-height: 1;
+    color: #dddddd;
+    background: rgba(0, 0, 0, 0.1); }
+  .uploader .upload-button .loading-state {
+    display: none; }
+  .uploader.loading .upload-button {
+    pointer-events: none; }
+    .uploader.loading .upload-button .loading-state {
+      display: block; }
+    .uploader.loading .upload-button .ready-state {
+      display: none; }
+
+.hud-container {
+  position: absolute;
+  user-select: none;
+  width: 200px;
+  color: #dddddd; }
+  .hud-container .attribute {
+    display: block;
+    font-size: 14px;
+    line-height: 14px;
+    margin-bottom: 6px; }
+  .hud-container .attribute-name {
+    display: block;
+    font-size: 11px;
+    line-height: 11px;
+    opacity: 0.5;
+    height: 12px; }
+  .hud-container .attribute-value {
+    font-weight: bold; }
+
+.selection-controls {
+  position: absolute;
+  padding: 10px;
+  top: 480px;
+  left: 0;
+  z-index: 1;
+  width: 200px; }
+  .selection-controls .selected-indicator {
+    text-align: center;
+    display: flex; }
+  .selection-controls .total,
+  .selection-controls .selected {
+    flex: 0 0 50%;
+    text-align: center; }
+  .selection-controls .count-label {
+    font-size: 10px;
+    color: #dddddd;
+    text-transform: uppercase;
+    opacity: 0.5; }
+  .selection-controls .count {
+    font-size: 22px;
+    color: #3c7cf9;
+    font-weight: bold; }
+  .selection-controls .buttons-container {
+    display: flex; }
+    .selection-controls .buttons-container .back {
+      flex: 0 1 auto;
+      margin-right: 5px; }
+    .selection-controls .buttons-container .zoom {
+      flex: 0 0 80%; }
+    .selection-controls .buttons-container .button.disabled {
+      pointer-events: none;
+      opacity: 0.2; }
+  .selection-controls .download-link {
+    color: #dddddd;
+    text-align: center;
+    font-size: 10px;
+    opacity: 0.5;
+    padding: 10px; }
+  .selection-controls .button {
+    margin-top: 10px; }
