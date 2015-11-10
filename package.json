@@ -1,0 +1,44 @@
+{
+  "name": "data-lasso",
+  "version": "0.1.0",
+  "description": "Three dimensional visualization tool.",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tumblr/data-lasso.git"
+  },
+  "author": "tumblr",
+  "bugs": {
+    "url": "https://github.com/tumblr/data-lasso/issues"
+  },
+  "homepage": "https://github.com/tumblr/data-lasso#readme",
+  "keywords": [
+    "visualization",
+    "graph",
+    "3d"
+  ],
+  "devDependencies": {
+    "browserify": "^12.0.1",
+    "gulp": "^3.9.0",
+    "gulp-if": "^2.0.0",
+    "gulp-sass": "^2.1.0",
+    "gulp-serve": "^1.2.0",
+    "gulp-sourcemaps": "^1.6.0",
+    "jstify": "^0.12.0",
+    "vinyl-buffer": "^1.0.0",
+    "vinyl-source-stream": "^1.1.0",
+    "watchify": "^3.6.0"
+  },
+  "dependencies": {
+    "backbone": "^1.2.3",
+    "d3": "^3.5.6",
+    "jquery": "^2.1.4",
+    "lodash": "^3.10.1",
+    "three": "^0.71.1",
+    "three-orbit-controls": "^71.0.0",
+    "three.regular.helvetiker": "^1.0.0"
+  }
+}
