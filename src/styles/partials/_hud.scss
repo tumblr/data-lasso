@@ -1,0 +1,25 @@
+.hud-container {
+    position: absolute;
+    user-select: none;
+    width: 200px;
+    color: $dl-color-text;
+
+    .attribute {
+        display: block;
+        font-size: 14px;
+        line-height: 14px;
+        margin-bottom: 6px;
+    }
+
+    .attribute-name {
+        display: block;
+        font-size: 11px;
+        line-height: 11px;
+        opacity: 0.5;
+        height: 12px;
+    }
+
+    .attribute-value {
+        font-weight: bold;
+    }
+}

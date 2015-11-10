@@ -1,0 +1,34 @@
+#main.datalasso-container {
+    margin: 0;
+}
+
+.datalasso-container {
+    background: $dl-color-background;
+    width: 100%;
+    height: 100%;
+    position: relative;
+    z-index: 0;
+    overflow: hidden;
+    margin: 0;
+
+
+    .button {
+        width: 100%;
+        line-height: 2;
+        border: 0;
+        text-transform: uppercase;
+        font-weight: bold;
+        outline: none;
+        color: $dl-color-text;
+
+        &.red {
+            background-color: $dl-accent-red;
+            color: $dl-color-background;
+        }
+
+        &.black {
+            background-color: $dl-background-subtle;
+            color: $dl-color-text;
+        }
+    }
+}

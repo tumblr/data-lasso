@@ -1,0 +1,18 @@
+.mode-indicator {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 10px;
+    pointer-events: none;
+    text-align: center;
+    line-height: 1.1;
+    color: $dl-color-text;
+
+    strong {
+        display: block;
+    }
+
+    .selection-mode {
+        color: $dl-accent-yellow;
+    }
+}
