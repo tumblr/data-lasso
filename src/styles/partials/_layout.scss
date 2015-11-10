@@ -1,7 +1,3 @@
-#main.datalasso-container {
-    margin: 0;
-}
-
 .datalasso-container {
     background: $dl-color-background;
     width: 100%;
@@ -10,7 +6,8 @@
     z-index: 0;
     overflow: hidden;
     margin: 0;
-
+    font-size: 13px;
+    line-height: 1.4;
 
     .button {
         width: 100%;
