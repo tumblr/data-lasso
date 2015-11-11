@@ -52,7 +52,7 @@ li {
     width: 100%;
 }
 
-.more a {
+.button {
     display: inline-block;
     color: #cc545d;
     border: 1px solid #cc545d;
@@ -62,3 +62,18 @@ li {
     text-decoration: none;
 }
 
+.button:active {
+    color: #3c7cf9;
+    border-color: #3c7cf9;
+}
+
+.credits {
+    font-family: Lora;
+    display: block;
+    width: 100%;
+    margin: 40px 10px 10px 10px;
+}
+
+.link {
+    color: rgba(255, 255, 255, 0.95);
+}
