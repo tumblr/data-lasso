@@ -2,12 +2,17 @@
 
 Data Lasso is a visualization tool that allows exploration of arbitrary set of data. It is built to be agnostic to the structure and formatting of data.
 
-**Note**
-Data Lasso is on track to be open sourced, so it tries to minimize amount of things it uses that are Tumblr-specific, such as base view and various other helpers.
-
 ### Usage
 
-_To be added_
+#### Standalone
+
+Data Lasso can be be used as a standalone itself to explore arbitrary data sets. Data Lasso runs entirely in a browser, so this repository  contains everything necessary to get started.
+
+Checkout the repository locally, run `npm install` to install necessary dependencies and then
+
+
+
+#### As part of another system
 
 #### Data formatting
 
