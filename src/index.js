@@ -39,6 +39,7 @@ var DataLassoView = Backbone.View.extend({
             this.initializeModules(options.modules);
         }
 
+        this.render();
     },
 
     /**
@@ -91,3 +92,5 @@ var DataLassoView = Backbone.View.extend({
 });
 
 module.exports = DataLassoView;
+
+window.DataLasso = module.exports;
