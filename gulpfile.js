@@ -73,4 +73,8 @@ gulp.task('styles:watch', function watchStyles () {
 /**
  * ## Serve Task
  */
-gulp.task('serve', serve('public'));
+gulp.task('serve', serve({
+    root: ['public'],
+    hostname: 'localhost',
+    port: 3000
+}));
