@@ -12,9 +12,9 @@ your considerations can be met.
 ## Pull Requests
 
 1. Fork the repo and create your branch from `master`.
-2. Make sure to have your code comply with jshint configuration in a root directory.
-3. Update documentation.
-6. If you haven't already, complete the Contributor License Agreement ("CLA").
+1. Make sure to have your code comply with jshint configuration in a root directory.
+1. Update documentation.
+1. If you haven't already, complete the Contributor License Agreement ("CLA").
 
 ## Contributor License Agreement ("CLA")
 
