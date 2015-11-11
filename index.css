@@ -1,0 +1,64 @@
+html,
+body {
+    height: 100%;
+    width: 100%;
+}
+
+body {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    background: #32303d;
+    color: rgba(255, 255, 255, 0.95);
+    font-size: 20px;
+    line-height: 1.6;
+    display: flex;
+    align-items: center;
+}
+
+.container {
+    width: 100%;
+    display: flex;
+    justify-content: left;
+    flex-direction: column;
+    padding: 10px;
+    box-sizing: border-box;
+    text-align: left;
+}
+
+h1 {
+    font-size: 22vmin;
+    font-weight: bold;
+    line-height: 0.9;
+    margin: 10px 0;
+    padding-top: 40px;
+}
+
+.description {
+    width: 100%;
+    font-family: Lora;
+    margin: 20px 10px;
+}
+
+pre {
+    display: inline;
+    font-family: monospace;
+}
+
+li {
+    margin-bottom: 20px;
+}
+
+.more {
+    display: block;
+    width: 100%;
+}
+
+.more a {
+    display: inline-block;
+    color: #cc545d;
+    border: 1px solid #cc545d;
+    padding: 10px 20px;
+    border-radius: 5px;
+    margin: 10px;
+    text-decoration: none;
+}
+
