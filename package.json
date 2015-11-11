@@ -20,6 +20,11 @@
     "graph",
     "3d"
   ],
+  "license": "Apache-2.0",
+  "author": {
+    "name": "Tim Gilyazetdinov",
+    "email": "tim@tumblr.com"
+  },
   "devDependencies": {
     "browserify": "^12.0.1",
     "gulp": "^3.9.0",
