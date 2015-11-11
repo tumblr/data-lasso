@@ -11,6 +11,7 @@ var sass = require('gulp-sass');
 var serve = require('gulp-serve');
 var gulpif = require('gulp-if');
 
+gulp.task('default', ['start']);
 gulp.task('start', ['scripts', 'styles', 'serve']);
 gulp.task('start:dev', ['scripts:watch', 'styles:watch', 'serve']);
 
