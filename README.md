@@ -22,7 +22,7 @@ It's easy:
 
   Data Lasso will try to silently parse field with name `ip` into ip subnets on file upload. Field named `email` will be parsed to extract domain. Field named `geo` will be broken down onto city and country.
 
-  Once you have your file - just upload it to Data Lasso. Or, just use this [sample data set].
+  Once you have your file - just upload it to Data Lasso. Or, just use this [sample data set](https://github.com/tumblr/data-lasso/blob/master/samples/UCS_Satellite_Database.csv).
 
 - ##### 3D space
 
