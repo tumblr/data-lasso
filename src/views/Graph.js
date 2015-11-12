@@ -158,6 +158,7 @@ var GraphView = Backbone.View.extend({
     onWindowResize: function () {
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         this.camera.aspect = window.innerWidth / window.innerHeight;
+        this.camera.updateProjectionMatrix()
     },
 
     /**
