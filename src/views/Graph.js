@@ -35,6 +35,8 @@ var GraphView = Backbone.View.extend({
 
     initialize: function (options) {
         this.options = options;
+
+        window.addEventListener('resize', _.bind(this.onWindowResize, this));
     },
 
     /**
@@ -151,6 +153,12 @@ var GraphView = Backbone.View.extend({
     onControlsUpdate: function () {
         this.renderFrame();
         events.trigger('datalasso:camera:moved');
+    },
+
+    onWindowResize: function () {
+        this.renderer.setSize(window.innerWidth, window.innerHeight);
+        this.camera.aspect = window.innerWidth / window.innerHeight;
+        this.camera.updateProjectionMatrix()
     },
 
     /**
@@ -295,6 +303,10 @@ var GraphView = Backbone.View.extend({
         this.setUpTHREE();
 
         return this;
+    },
+
+    remove: function () {
+        window.removeEventListener('resize', _.bind(this.onWindowResize, this));
     }
 });
 
