@@ -64,7 +64,7 @@ Data Lasso can be used as part of another application, using CommonJS module str
 
 ### Visualization
 
-Visualization makes use of 3 spatial spatial dimensions and color. Any attribute can be used for plotting in any of the 4 dimensions.
+Visualization makes use of 3 spatial dimensions and color. Any attribute can be used for plotting in any of the 4 dimensions.
 
 All dimensions are currently plotted on a simple linear scale. There are no ticks on axis with precise values - but you can see exact values for particular graph entries by hovering over them.
 
@@ -79,7 +79,7 @@ Effectively handling selecting in 3d space without a mouse is hard, so unfortuna
 
 ### Support
 
-Feel free to open issue on github if you encounter a bug. If you want to get more details on the roadmap of the product, or potentially use it in your stack and need help - contact the [author](https//github.com/tgilan);
+Feel free to open issue on github if you encounter a bug. If you want to get more details on the roadmap of the product, or potentially use it in your stack and need help - contact the [author](https://github.com/tgilan);
 
 ### License
 
