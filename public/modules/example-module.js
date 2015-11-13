@@ -1,20 +1,4 @@
-window.onload = function () {
-    if (typeof DataLasso === 'undefined') {
-        console.error('DataLasso not defined');
-    } else {
-        var options = {};
-
-        options.modules = {
-            example: {
-                constructor: ExampleModule
-            }
-        }
-
-        var dataLasso = new DataLasso(options);
-
-        document.body.appendChild(dataLasso.el);
-    }
-}
+'use strict';
 
 /**
  * # Sample Data Lasso Module

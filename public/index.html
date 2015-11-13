@@ -9,7 +9,40 @@
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/3.10.1/lodash.min.js"></script>
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/backbone.js/1.2.3/backbone-min.js"></script>
+
     <script type="text/javascript" src="build/datalasso.js"></script>
-    <script type="text/javascript" src="index.js"></script>
+    <script type="text/javascript" src="modules/example-module.js"></script>
+
+    <script>
+        window.onload = function () {
+            if (typeof DataLasso === 'undefined') {
+                console.error('DataLasso not defined');
+            } else {
+                /**
+                 * Options hash for Data Lasso configuration
+                 */
+                var options = {};
+
+                /**
+                 * `options.modules` lists modules that should be used with Data Lasso
+                 */
+                options.modules = {
+                    example: {
+                        constructor: ExampleModule
+                    }
+                }
+
+                /**
+                 * Initiate Data Lasso. Backbone View will be returned
+                 */
+                var dataLasso = new DataLasso(options);
+
+                /**
+                 * Append Data Lasso like any other Backbone View
+                 */
+                document.body.appendChild(dataLasso.el);
+            }
+        }
+    </script>
 </body>
 </html>
