@@ -74,7 +74,7 @@ Under the hood, Data Lasso is build using wonderful [three.js](http://threejs.or
 
 Best usage scenario is a desktop browser with a mouse, although trackpad will work too. While Data Lasso does not care what flavor of OS you use, Data Lasso was not tested in browsers other then Chrome and Firefox.
 
-Effectively handling selecting in 3d space without a mouse is hard, so unfortunately usage on mobile devices is out of scope at this point.
+Effectively handling selecting in 3D space without a mouse is hard, so unfortunately usage on mobile devices is out of scope at this point.
 
 
 ### Support
