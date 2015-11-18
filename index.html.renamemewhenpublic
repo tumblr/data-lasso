@@ -21,6 +21,15 @@
             </ul>
         </div>
 
+        <div class="browser">
+            <div class="browser-bar">
+                <span class="circle"></span>
+                <span class="circle"></span>
+                <span class="circle"></span>
+            </div>
+            <img src="public/datalasso-screenshot.gif" class="screenshot" alt="Data Lasso Screenshot">
+        </div>
+
         <div class="more">
             <a class="button" href="datalasso.html">Try it out</a>
         </div>
