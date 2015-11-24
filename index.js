@@ -6,6 +6,4 @@ window.onload = function () {
         var dataLasso = new DataLasso(options);
         document.body.appendChild(dataLasso.el);
     }
-
-    // @TODO: Add a sample module
 }
