@@ -128,14 +128,14 @@ var GraphView = Backbone.View.extend({
     redrawEverything: function (e) {
         this.data = e.data;
 
-        this.updateGeomerty();
-        this.updateAxisGeomerty();
+        this.updateGeometry();
+        this.updateAxisGeometry();
     },
 
     redrawPoints: function (e) {
         this.data.entries = e.entries;
 
-        this.updateGeomerty();
+        this.updateGeometry();
     },
 
     disableControls: function () {
@@ -206,7 +206,7 @@ var GraphView = Backbone.View.extend({
     /**
      * Geometry
      */
-    updateGeomerty: function () {
+    updateGeometry: function () {
         this.updateBufferGeometry();
     },
 
@@ -275,7 +275,7 @@ var GraphView = Backbone.View.extend({
     /**
      * Update axis lines and legend geometry
      */
-    updateAxisGeomerty: function () {
+    updateAxisGeometry: function () {
         if (this.axisMeshes) {
             _.each(this.axisMeshes, function removeAxisMesh(mesh) {
                 this.scene.remove(mesh);
