@@ -13,7 +13,7 @@ var gulpif = require('gulp-if');
 
 gulp.task('default', ['start']);
 gulp.task('start', ['scripts', 'styles', 'serve']);
-gulp.task('start:dev', ['scripts:watch', 'styles:watch', 'serve']);
+gulp.task('start:dev', ['scripts:watch', 'styles', 'styles:watch', 'serve']);
 
 /**
  * ## Scripts Tasks
