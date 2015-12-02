@@ -2,7 +2,7 @@
   "name": "data-lasso",
   "version": "1.0.0",
   "description": "Three dimensional visualization tool.",
-  "main": "src/index.js",
+  "main": "build/datalasso.js",
   "scripts": {
     "start": "gulp start"
   },

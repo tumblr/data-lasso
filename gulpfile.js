@@ -12,23 +12,42 @@ var serve = require('gulp-serve');
 var gulpif = require('gulp-if');
 
 gulp.task('default', ['start']);
+
+/** Serve Data Lasso locally **/
 gulp.task('start', ['scripts', 'styles', 'serve']);
 gulp.task('start:dev', ['scripts:watch', 'styles', 'styles:watch', 'serve']);
+
+/** Build scripts and styles that are used in the module **/
+gulp.task('build', ['scripts:build', 'styles:build']);
+
+/**
+ * ## Hash of possible output destinations
+ *
+ * - build: What is distributed in the module
+ * - public: What is served off a locally running server
+ */
+var dest = {
+    build: './build',
+    public: './public/build'
+}
 
 /**
  * ## Scripts Tasks
  */
-gulp.task('scripts', _.partial(scripts, false));
-gulp.task('scripts:watch', _.partial(scripts, true));
+gulp.task('scripts', _.partial(scripts, false, dest.public));
+gulp.task('scripts:watch', _.partial(scripts, true, dest.public));
+gulp.task('scripts:build', _.partial(scripts, false, dest.build));
 
 /**
  * ### Scripts task builder.
  * Prepares browserify or watchify bundle.
  *
  * @param watch - Whether to use watchify
+ * @param dest - Where to build scripts to
  */
-function scripts(watch) {
+function scripts (watch, dest) {
     watch = watch || false;
+    dest = dest || paths.build;
 
     var options = _.assign({}, watchify.args, {
         entries: ['./src/index.js']
@@ -49,7 +68,7 @@ function scripts(watch) {
             .pipe(buffer())
             .pipe(gulpif(watch, sourcemaps.init({loadMaps: true})))
             .pipe(gulpif(watch, sourcemaps.write('./')))
-            .pipe(gulp.dest('./public/build'));
+            .pipe(gulp.dest(dest));
     }
 
     b.on('update', bundle);
@@ -61,15 +80,23 @@ function scripts(watch) {
 /**
  * ## Styles Tasks
  */
-gulp.task('styles', function styles () {
-    gulp.src('./src/styles/index.scss')
-        .pipe(sass().on('error', sass.logError))
-        .pipe(gulp.dest('./public/build'));
-});
-
+gulp.task('styles', _.partial(styles, dest.public));
+gulp.task('styles:build', _.partial(styles, dest.build));
 gulp.task('styles:watch', function watchStyles () {
     gulp.watch('./src/styles/**/*.scss', ['styles']);
 });
+
+/**
+ * ### Styles task builder
+ * @param dest - Where to build styles
+ */
+function styles (dest) {
+    dest = dest || paths.build;
+
+    return gulp.src('./src/styles/index.scss')
+        .pipe(sass().on('error', sass.logError))
+        .pipe(gulp.dest(dest));
+}
 
 /**
  * ## Serve Task
