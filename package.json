@@ -10,7 +10,10 @@
     "type": "git",
     "url": "git+https://github.com/tumblr/data-lasso.git"
   },
-  "author": "tumblr",
+  "author": {
+    "name": "Tim Gilyazetdinov",
+    "email": "tim@tumblr.com"
+  },
   "bugs": {
     "url": "https://github.com/tumblr/data-lasso/issues"
   },
@@ -21,13 +24,10 @@
     "3d"
   ],
   "license": "Apache-2.0",
-  "author": {
-    "name": "Tim Gilyazetdinov",
-    "email": "tim@tumblr.com"
-  },
   "devDependencies": {
     "browserify": "^12.0.1",
     "gulp": "^3.9.0",
+    "gulp-derequire": "^2.1.0",
     "gulp-if": "^2.0.0",
     "gulp-sass": "^2.1.0",
     "gulp-serve": "^1.2.0",

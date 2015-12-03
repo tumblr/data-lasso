@@ -10,6 +10,7 @@ var sourcemaps = require('gulp-sourcemaps');
 var sass = require('gulp-sass');
 var serve = require('gulp-serve');
 var gulpif = require('gulp-if');
+var derequire = require('gulp-derequire');
 
 gulp.task('default', ['start']);
 
@@ -50,7 +51,8 @@ function scripts (watch, dest) {
     dest = dest || paths.build;
 
     var options = _.assign({}, watchify.args, {
-        entries: ['./src/index.js']
+        entries: ['./src/index.js'],
+        standalone: 'datalasso'
     });
 
     if (watch) {
@@ -68,6 +70,7 @@ function scripts (watch, dest) {
             .pipe(buffer())
             .pipe(gulpif(watch, sourcemaps.init({loadMaps: true})))
             .pipe(gulpif(watch, sourcemaps.write('./')))
+            .pipe(derequire())
             .pipe(gulp.dest(dest));
     }
 
