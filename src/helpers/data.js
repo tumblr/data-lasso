@@ -78,17 +78,50 @@ var DataHelper = {
     _processAttributes: function (entries) {
         var attributes = {};
 
+        /**
+         * Look at the first row of data and set up attributes hash
+         * based on that.
+         *
+         * - If value looks like a number, attribute will be deemed numeric,
+         *   and min/max values will be added to it
+         *
+         * - If value does not look like a number, attribute will be considered
+         *   categorical, and a list of categories will be added.
+         */
+        _.each(entries[0], function (value, name) {
+            attributes[name] = {};
+            if (/^\d+$/.test(value)) {
+                value = parseInt(value);
+                attributes[name].type = 'numeric';
+                attributes[name].min = value;
+                attributes[name].max = value;
+            } else {
+                attributes[name].type = 'categorical';
+                attributes[name].categories = {};
+            }
+        });
+
+        /**
+         * Go over the rest of the entries and calculate min/max values for
+         * numeric attributes, and count instances of each category for categorical
+         * attributes.
+         */
         _.each(entries, function (entry) {
             _.each(entry, function (value, name) {
-                if (!attributes[name]) {
-                    attributes[name] = {};
-                    attributes[name].categories = {};
-                }
-
-                if (!attributes[name].categories[value]) {
-                    attributes[name].categories[value] = 1;
-                } else {
-                    attributes[name].categories[value] += 1;
+                if (attributes[name].type === 'categorical') {
+                    if (!attributes[name].categories[value]) {
+                        attributes[name].categories[value] = 1;
+                    } else {
+                        attributes[name].categories[value] += 1;
+                    }
+                } else if (attributes[name].type === 'numeric') {
+                    value = parseInt(value);
+                    if (value < attributes[name].min) {
+                        attributes[name].min = value;
+                    }
+                    if (value > attributes[name].max) {
+                        attributes[name].max = value;
+                    }
                 }
             });
         });
@@ -126,11 +159,11 @@ var DataHelper = {
         var scales = {};
 
         _.each(attributes, function (attribute, name) {
-            if (attribute.categories) {
+            if (attribute.type === 'categorical') {
                 scales[name] = d3.scale.ordinal()
                     .domain(attribute.categories)
                     .rangePoints([0, size]);
-            } else {
+            } else if (attribute.type === 'numeric') {
                 scales[name] = d3.scale.linear()
                     .domain([attribute.min, attribute.max])
                     .range([0, size]);
