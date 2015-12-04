@@ -7,19 +7,19 @@ var buffer = require('vinyl-buffer');
 var browserify = require('browserify');
 var source = require('vinyl-source-stream');
 var sourcemaps = require('gulp-sourcemaps');
-var sass = require('gulp-sass');
 var serve = require('gulp-serve');
 var gulpif = require('gulp-if');
 var derequire = require('gulp-derequire');
+var sassr = require('sassr');
 
 gulp.task('default', ['start']);
 
 /** Serve Data Lasso locally **/
-gulp.task('start', ['scripts', 'styles', 'serve']);
-gulp.task('start:dev', ['scripts:watch', 'styles', 'styles:watch', 'serve']);
+gulp.task('start', ['scripts', 'serve']);
+gulp.task('start:dev', ['scripts:watch', 'styles:watch', 'serve']);
 
-/** Build scripts and styles that are used in the module **/
-gulp.task('build', ['scripts:build', 'styles:build']);
+/** Build assets that are distributed with the module **/
+gulp.task('build', ['scripts:build']);
 
 /**
  * ## Hash of possible output destinations
@@ -31,6 +31,8 @@ var dest = {
     build: './build',
     public: './public/build'
 }
+
+var bundle;
 
 /**
  * ## Scripts Tasks
@@ -62,8 +64,9 @@ function scripts (watch, dest) {
 
     var b = browserify(options);
     b.transform('jstify', { engine: 'lodash' })
+    b.transform(sassr);
 
-    var bundle = function () {
+    bundle = function () {
         return b.bundle()
             .on('error', console.error.bind(console, 'Browserify Error'))
             .pipe(source('datalasso.js'))
@@ -83,23 +86,11 @@ function scripts (watch, dest) {
 /**
  * ## Styles Tasks
  */
-gulp.task('styles', _.partial(styles, dest.public));
-gulp.task('styles:build', _.partial(styles, dest.build));
 gulp.task('styles:watch', function watchStyles () {
-    gulp.watch('./src/styles/**/*.scss', ['styles']);
+    gulp.watch('./src/styles/**/*.scss', function () {
+        bundle();
+    });
 });
-
-/**
- * ### Styles task builder
- * @param dest - Where to build styles
- */
-function styles (dest) {
-    dest = dest || paths.build;
-
-    return gulp.src('./src/styles/index.scss')
-        .pipe(sass().on('error', sass.logError))
-        .pipe(gulp.dest(dest));
-}
 
 /**
  * ## Serve Task

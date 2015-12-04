@@ -10,6 +10,7 @@ var Hud = require('./views/Hud');
 var ModeIndicator = require('./views/ModeIndicator');
 var SelectionControls = require('./views/SelectionControls');
 var events = require('./lib/events');
+var styles = require('./styles/index.scss');
 
 var DataLassoView = Backbone.View.extend({
 
@@ -63,6 +64,8 @@ var DataLassoView = Backbone.View.extend({
     },
 
     render: function () {
+        styles.append();
+        
         // Uploader
         this.uploader = new Uploader();
         this.$el.append(this.uploader.render().el);
