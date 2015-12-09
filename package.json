@@ -1,6 +1,6 @@
 {
   "name": "data-lasso",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Three dimensional visualization tool.",
   "main": "build/datalasso.js",
   "scripts": {

@@ -71323,7 +71323,7 @@ var DataLassoView = Backbone.View.extend({
 
     render: function () {
         styles.append();
-
+        
         // Uploader
         this.uploader = new Uploader();
         this.$el.append(this.uploader.render().el);
