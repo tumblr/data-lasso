@@ -2,6 +2,7 @@
 
 var _ = require('lodash');
 var d3 = require('d3');
+var moment = require('moment');
 
 /**
  * ## Data Helper
@@ -41,6 +42,12 @@ var DataHelper = {
     _preProcessKnownFields: function (entries) {
         _.each(entries, function (entry, index) {
             entry.__id = index;
+
+            if (entry.time && !entry.date) {
+                try {
+                    entries[index].date = moment.unix(entry.time).format('YYYY-MM-DD HH:mm:ss Z');
+                } catch (e) {}
+            }
 
             if (entry.ip) {
                 try {
