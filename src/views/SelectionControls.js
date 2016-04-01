@@ -3,7 +3,7 @@
 var Backbone = require('backbone');
 var events = require('../lib/events');
 var template = require('../templates/selection-controls.tpl');
-var store = require('../models/Data');
+var store = require('../store');
 
 /**
  * ## Selection View

@@ -5,7 +5,7 @@ var d3 = require('d3');
 var Backbone = require('backbone');
 var events = require('../lib/events');
 var template = require('../templates/uploader.tpl');
-var store = require('../models/Data');
+var store = require('../store');
 
 /**
  * ## Upload Form View

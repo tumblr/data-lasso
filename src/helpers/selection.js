@@ -4,7 +4,7 @@ var _ = require('lodash');
 var THREE = require('three');
 var events = require('../lib/events');
 var Class = require('../lib/class');
-var store = require('../models/Data');
+var store = require('../store');
 
 /**
  * ## Selection Helper

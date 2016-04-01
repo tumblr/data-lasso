@@ -11,7 +11,7 @@ var axisGeometry = require('../geometry/axis');
 var mouseVectorHelper = require('../helpers/mousevector');
 var shaders = require('../templates/shaders.tpl');
 var textures = require('../helpers/texture');
-var store = require('../models/Data');
+var store = require('../store');
 
 
 /**

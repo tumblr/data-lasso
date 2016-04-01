@@ -4,7 +4,7 @@ var _ = require('lodash');
 var Backbone = require('backbone');
 var events = require('../lib/events');
 var template = require('../templates/axis-controls.tpl');
-var store = require('../models/Data');
+var store = require('../store');
 
 /**
  * ## Axis Controls View

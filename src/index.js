@@ -2,7 +2,7 @@
 
 var _ = require('lodash');
 var Backbone = require('backbone');
-var store = require('./models/Data');
+var store = require('./store');
 var Uploader = require('./views/Uploader');
 var AxisControls = require('./views/AxisControls');
 var Graph = require('./views/Graph');

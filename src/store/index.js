@@ -4,6 +4,7 @@ var _ = require('lodash');
 var Model = require('backbone').Model;
 var events = require('../lib/events');
 var datahelper = require('../helpers/data');
+var initialState = require('./initialState');
 
 /**
  * This is primary data store for Data Lasso. It also acts as a
@@ -12,32 +13,9 @@ var datahelper = require('../helpers/data');
 
 var DataModel = Model.extend({
 
-    // todo: move out to store/initialState.js
-    defaults: {
-        entries: null,
-        scales: null,
-        attributes: null,
-        selectedEntries: [],
-        snapshots: [],
-        controls: true,
-        mode: 'normal',
-        mappings: {
-            x: null,
-            y: null,
-            z: null,
-            color: null,
-        }
-    },
+    defaults: initialState,
 
     initialize: function () {
-        this.setupEventListeners();
-
-        // TODO: Put snapshots in it's own model
-        this.dataSnapshots = [];
-    },
-
-    setupEventListeners: function () {
-        // Events are becoming a dispatcher
         this.listenTo(events, 'options-set', function (action) {
             this.options = action.options;
         });

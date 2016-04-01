@@ -3,7 +3,7 @@
 var Backbone = require('backbone');
 var events = require('../lib/events');
 var template = require('../templates/mode-indicator.tpl');
-var store = require('../models/Data');
+var store = require('../store');
 
 /**
  * ## Mode Indicator View
