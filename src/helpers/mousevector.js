@@ -5,7 +5,6 @@ var THREE = require('three');
 var events = require('../lib/events');
 var Class = require('../lib/class');
 
-
 /**
  * ## Mouse Helper
  *
@@ -14,7 +13,6 @@ var Class = require('../lib/class');
  * the data lasso
  *
  * @param $container - container that renderer uses
- *
  */
 
 var MouseHelper =  Class.extend({

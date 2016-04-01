@@ -43,27 +43,19 @@ var SelectionHelper = Class.extend({
     initialize: function (scene, camera) {
         this.camera = camera;
         this.scene = scene;
-
         this.selectionMode = false;
 
-        this.setUpEventListeners();
-    },
-
-    /**
-     * Set up event listeners
-     */
-    setUpEventListeners: function () {
-        // Todo: Refactor mouse component to emit events itself
         events.on('datalasso:mouse:move', _.bind(this.onMouseMove, this));
         events.on('datalasso:mouse:down', _.bind(this.onMouseDown, this));
-
         events.on('datalasso:camera:moved', _.bind(this.updateProjectionPlane, this));
 
-        store.on('change:entries', _.bind(function() {
-            this.entries = store.get('entries');
-        }, this));
+        store.on('change:entries', _.bind(this.onEntriesChange, this));
 
         document.addEventListener('keyup', _.bind(this.onDocumentKeyUp, this), false );
+    },
+
+    onEntriesChange: function () {
+        this.entries = store.get('entries');
     },
 
     /**

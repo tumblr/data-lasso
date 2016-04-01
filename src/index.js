@@ -2,35 +2,31 @@
 
 var _ = require('lodash');
 var Backbone = require('backbone');
-var store = require('./store');
+
+var events = require('./lib/events');
+var styles = require('./styles/index.scss');
+var dispatcher = require('./dispatcher');
+var defaults = require('./helpers/optionDefaults');
+
 var Uploader = require('./views/Uploader');
 var AxisControls = require('./views/AxisControls');
 var Graph = require('./views/Graph');
 var Hud = require('./views/Hud');
 var ModeIndicator = require('./views/ModeIndicator');
 var SelectionControls = require('./views/SelectionControls');
-var events = require('./lib/events');
-var styles = require('./styles/index.scss');
-var dispatcher = require('./dispatcher');
+
+/**
+ * # Data Lasso View
+ *
+ * Main view for Data Lasso which handles receiving of options,
+ * initializing sub views and modules, if any
+ */
 
 var DataLassoView = Backbone.View.extend({
 
     className: 'datalasso-container',
 
-    /**
-     * All options that can be overwritten
-     * from outside of Data Lasso defined below.
-     */
-    defaults: {
-        // Size of the graph
-        graphSize: 2000,
-
-        // Size of the axis legend text
-        legendSize: 50,
-
-        // Color of the legend text
-        legendColor: 0xffffff
-    },
+    defaults: defaults,
 
     initialize: function (options) {
         this.modules = options.modules;

@@ -8,8 +8,18 @@ var initialState = require('./initialState');
 var dispatcher = require('../dispatcher');
 
 /**
- * This is primary data store for Data Lasso. It also acts as a
- * coordinator in the data flow through the Data Lasso
+ * # Store
+ *
+ * This is primary data store for Data Lasso. It strives to
+ * follow role prescribed to a store in a Flux pattern, containing the state
+ * that is only changed by actions and never by anything else.
+ *
+ * Views listen for changes in this Store, and never should modify it directly.
+ *
+ * In it's essence, it is a singleton Backbone model that both provides storage and
+ * a mechanism for communicating changes to a store downstream.
+ *
+ * Benefit of the dispatcher: No simultaneous execution.
  */
 
 var DataModel = Model.extend({
@@ -21,9 +31,11 @@ var DataModel = Model.extend({
     },
 
     /**
-     * Benefit of the dispatcher: No simultaneous execution.
-     * Avoid cascading effect by preventing nested updates
-     * @param action
+     * # Dispatcher Callback
+     *
+     * Receives actions coming down from a dispatcher and mutates state accordingly.
+     *
+     * @param action {object} - Action dispatched with a dispatcher. Always has an `actionType`.
      */
     dispatchCallback: function (action) {
         switch (action.actionType) {
@@ -44,11 +56,11 @@ var DataModel = Model.extend({
                 break;
 
             case 'selection-made':
-                this.newSelection(action);
+                this.onNewSelection(action);
                 break;
 
             case 'axis-mappings-updated':
-                this.processAxisMappings(action);
+                this.onNewMappings(action);
                 break;
 
             case 'entry-hovered':
@@ -56,27 +68,31 @@ var DataModel = Model.extend({
                 break;
 
             case 'zoom-in':
-                this.zoomIntoSelection();
+                this.onZoomIn();
                 break;
 
             case 'zoom-out':
-                this.zoomOutOfSelection();
+                this.onZoomOut();
                 break;
         }
     },
 
     /**
-     * New data was uploaded
+     * New data was uploaded. Parse it to get attributes and scales.
      */
     onFileUpload: function (action) {
         var data = datahelper.processInput(action.entries, this.options);
         this.set({
             entries: data.entries,
             attributes: data.attributes,
-            scales: data.scales
+            scales: data.scales,
+            snapshots: [],
         });
     },
 
+    /**
+     * New selection started (user started using a selection tool).
+     */
     onSelectionStart: function () {
         this.set({
             mode: 'selection',
@@ -84,6 +100,9 @@ var DataModel = Model.extend({
         });
     },
 
+    /**
+     * Selection has stopped, or selection was finished.
+     */
     onSelectionStop: function () {
         this.set({
             mode: 'normal',
@@ -92,9 +111,9 @@ var DataModel = Model.extend({
     },
 
     /**
-     * New axis mappings were selected
+     * New axis mappings were selected for the visualization
      */
-    processAxisMappings: function (action) {
+    onNewMappings: function (action) {
         this.set({
             mappings: action.mappings,
             scales: datahelper.getUpdatedScales(this.get('entries'), this.options)
@@ -104,7 +123,7 @@ var DataModel = Model.extend({
     /**
      * New selection was made
      */
-    newSelection: function (action) {
+    onNewSelection: function (action) {
         var selectedEntries = action.selectedEntries;
         var entries = _.transform(this.get('entries'), function (result, entry) {
             entry.isSelected = (selectedEntries.indexOf(entry.__id) >= 0);
@@ -118,9 +137,9 @@ var DataModel = Model.extend({
     },
 
     /**
-     * Selection is zoomed in
+     * Selection is zoomed into
      */
-    zoomIntoSelection: function () {
+    onZoomIn: function () {
         var newEntries = _.transform(this.get('entries'), function(result, entry) {
             if (entry.isSelected) {
                 entry.isSelected = false;
@@ -137,15 +156,14 @@ var DataModel = Model.extend({
     },
 
     /**
-     * Selection is zoomed out
+     * Selection is zoomed out of
      */
-    zoomOutOfSelection: function () {
+    onZoomOut: function () {
         this.restoreLastDataSnapshot();
     },
 
     /**
-     * Preserve whatever is in `data` now in an array of
-     * chronological snapshots
+     * Preserve current state that will be changed by zooming in in a snapshot
      */
     saveDataSnapshot: function () {
         var snapshots = this.get('snapshots') || [];
@@ -156,7 +174,7 @@ var DataModel = Model.extend({
     },
 
     /**
-     * Get last snapshot stored, and use that as current data object
+     * Get last snapshot and use it
      */
     restoreLastDataSnapshot: function () {
         var snapshots = this.get('snapshots');
