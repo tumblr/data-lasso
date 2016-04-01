@@ -12,6 +12,7 @@ var mouseVectorHelper = require('../helpers/mousevector');
 var shaders = require('../templates/shaders.tpl');
 var textures = require('../helpers/texture');
 var store = require('../store');
+var dispatcher = require('../dispatcher');
 
 
 /**
@@ -126,20 +127,7 @@ var GraphView = Backbone.View.extend({
     /**
      * Event handlers
      */
-
-
-    /**
-     * Events are used in place of dispatcher;
-     * Model serves as a store
-     * TODO:
-     * get it working
-     * commit
-     * move events to dispatcher
-     * modify model to be store
-     * @param store
-     */
-
-    redrawEverything: function (store) {
+    redrawEverything: function () {
         this.data = _.pick(store.toJSON(), ['entries', 'mappings', 'scales', 'attributes']);
 
         this.updateGeometry();
@@ -196,9 +184,7 @@ var GraphView = Backbone.View.extend({
             if (intersections.length) {
                 var entry = this.data.entries[intersections[0].index];
 
-                events.trigger('datalasso:hud:update', {
-                    focused: entry
-                });
+                dispatcher.dispatch({actionType: 'entry-hovered', entry: entry});
 
                 if (entry.isSelected) {
                     size[intersections[0].index] = this.pointSize * this.pointHoverFactor * this.pointSelectionFactor;
@@ -206,7 +192,7 @@ var GraphView = Backbone.View.extend({
                     size[intersections[0].index] = this.pointSize * this.pointHoverFactor;
                 }
             } else {
-                events.trigger('datalasso:hud:clear');
+                dispatcher.dispatch({actionType: 'entry-hovered', entry: null});
             }
 
             this.geometry.attributes.size.needsUpdate = true;

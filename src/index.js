@@ -11,6 +11,7 @@ var ModeIndicator = require('./views/ModeIndicator');
 var SelectionControls = require('./views/SelectionControls');
 var events = require('./lib/events');
 var styles = require('./styles/index.scss');
+var dispatcher = require('./dispatcher');
 
 var DataLassoView = Backbone.View.extend({
 
@@ -35,7 +36,7 @@ var DataLassoView = Backbone.View.extend({
         this.modules = options.modules;
         this.options = _.defaults({}, _.omit(options, 'modules'), this.defaults);
 
-        events.trigger('options-set', {options: this.options});
+        dispatcher.dispatch({actionType: 'options-set', options: this.options});
 
         if (this.modules) {
             this.initializeModules(this.modules);

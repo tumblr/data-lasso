@@ -6,6 +6,7 @@ var Backbone = require('backbone');
 var events = require('../lib/events');
 var template = require('../templates/uploader.tpl');
 var store = require('../store');
+var dispatcher = require('../dispatcher');
 
 /**
  * ## Upload Form View
@@ -68,7 +69,7 @@ var UploaderView = Backbone.View.extend({
                 break;
         }
 
-        events.trigger('datalasso:data:uploaded', {entries: entries});
+        dispatcher.dispatch({actionType: 'file-uploaded', entries: entries});
 
         this.listenToOnce(store, 'change:entries', this.toggleLoadingIndicator());
     },

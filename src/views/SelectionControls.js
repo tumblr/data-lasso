@@ -4,6 +4,7 @@ var Backbone = require('backbone');
 var events = require('../lib/events');
 var template = require('../templates/selection-controls.tpl');
 var store = require('../store');
+var dispatcher = require('../dispatcher');
 
 /**
  * ## Selection View
@@ -46,18 +47,30 @@ var SelectionControls = Backbone.View.extend({
      * ## Zoom INTO Selection
      */
     zoomIntoSelection: function () {
-        events.trigger('datalasso:selection:zoomin');
+        dispatcher.dispatch({actionType: 'zoom-in'});
     },
 
     /**
      * ## Zoom OUT OF Selection
      */
     zoomOutOfSelection: function () {
-        events.trigger('datalasso:selection:zoomout');
+        dispatcher.dispatch({actionType: 'zoom-out'});
     },
 
+    /**
+     * Generate CSV and trigger download
+     */
     downloadSelected: function () {
-        events.trigger('datalasso:selection:download');
+        var csvContent = 'data:text/csv;charset=utf-8,';
+        csvContent += _.keys(store.get('attributes')).join(',');
+
+        _.each(store.get('entries'), function (entry, index) {
+            if (entry.isSelected) {
+                csvContent += _.values(entry).join(',');
+                csvContent += (index < store.get('selectedEntries').length) ? '\n' : '';
+            }
+        }, this);
+        window.open(encodeURI(csvContent));
     },
 
     render: function (entriesTotal, selectedEntriesTotal, snapshotCount) {

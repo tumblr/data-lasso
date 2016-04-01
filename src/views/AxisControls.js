@@ -5,6 +5,7 @@ var Backbone = require('backbone');
 var events = require('../lib/events');
 var template = require('../templates/axis-controls.tpl');
 var store = require('../store');
+var dispatcher = require('../dispatcher');
 
 /**
  * ## Axis Controls View
@@ -49,9 +50,7 @@ var AxisControls = Backbone.View.extend({
             mappings[axis] = selectValue ? selectValue : null;
         }, this);
 
-        events.trigger('datalasso:axismappings:updated', {
-            mappings: mappings
-        });
+        dispatcher.dispatch({actionType: 'axis-mappings-updated', mappings: mappings});
     },
 
     render: function () {

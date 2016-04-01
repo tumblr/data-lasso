@@ -5,6 +5,7 @@ var Model = require('backbone').Model;
 var events = require('../lib/events');
 var datahelper = require('../helpers/data');
 var initialState = require('./initialState');
+var dispatcher = require('../dispatcher');
 
 /**
  * This is primary data store for Data Lasso. It also acts as a
@@ -16,38 +17,77 @@ var DataModel = Model.extend({
     defaults: initialState,
 
     initialize: function () {
-        this.listenTo(events, 'options-set', function (action) {
-            this.options = action.options;
-        });
-        this.listenTo(events, 'datalasso:data:uploaded', this.processNewData);
-        this.listenTo(events, 'datalasso:axismappings:updated', this.processAxisMappings);
-        this.listenTo(events, 'datalasso:selection:new', this.newSelection); // Name these better
-        this.listenTo(events, 'datalasso:selection:zoomin', this.zoomIntoSelection);
-        this.listenTo(events, 'datalasso:selection:zoomout', this.zoomOutOfSelection);
-        this.listenTo(events, 'datalasso:selection:download', this.downloadSelectedAsCSV);
-        this.listenTo(events, 'datalasso:controls', function (action) {
-            this.set({controls: action.on});
-        });
-        this.listenTo(events, 'datalasso:hud:update', function (action) {
-            this.set({focused: action.focused});
-        });
-        this.listenTo(events, 'datalasso:hud:clear', function () {
-            this.set({focused: null});
-        });
-        this.listenTo(events, 'datalasso:mode', function (action) {
-            this.set({mode: action.mode});
-        });
+        dispatcher.register(_.bind(this.dispatchCallback, this));
+    },
+
+    /**
+     * Benefit of the dispatcher: No simultaneous execution.
+     * Avoid cascading effect by preventing nested updates
+     * @param action
+     */
+    dispatchCallback: function (action) {
+        switch (action.actionType) {
+            case 'options-set':
+                this.options = action.options;
+                break;
+
+            case 'file-uploaded':
+                this.onFileUpload(action);
+                break;
+
+            case 'selection-started':
+                this.onSelectionStart();
+                break;
+
+            case 'selection-stopped':
+                this.onSelectionStop();
+                break;
+
+            case 'selection-made':
+                this.newSelection(action);
+                break;
+
+            case 'axis-mappings-updated':
+                this.processAxisMappings(action);
+                break;
+
+            case 'entry-hovered':
+                this.set({focused: action.entry});
+                break;
+
+            case 'zoom-in':
+                this.zoomIntoSelection();
+                break;
+
+            case 'zoom-out':
+                this.zoomOutOfSelection();
+                break;
+        }
     },
 
     /**
      * New data was uploaded
      */
-    processNewData: function (action) {
+    onFileUpload: function (action) {
         var data = datahelper.processInput(action.entries, this.options);
         this.set({
             entries: data.entries,
             attributes: data.attributes,
             scales: data.scales
+        });
+    },
+
+    onSelectionStart: function () {
+        this.set({
+            mode: 'selection',
+            controls: false,
+        });
+    },
+
+    onSelectionStop: function () {
+        this.set({
+            mode: 'normal',
+            controls: true,
         });
     },
 
@@ -130,22 +170,6 @@ var DataModel = Model.extend({
             snapshots: snapshots,
         });
     },
-
-    /**
-     * Generate CSV and trigger download
-     */
-    downloadSelectedAsCSV: function () {
-        var csvContent = 'data:text/csv;charset=utf-8,';
-
-        csvContent += _.keys(this.get('attributes')).join(',');
-
-        _.each(this.get('selectedEntries'), function (entry, index) {
-            csvContent += _.values(entry).join(',');
-            csvContent += index < this.get('selectedEntries').length ? '\n' : '';
-        }, this);
-
-        window.open(encodeURI(csvContent));
-    }
 });
 
 module.exports = new DataModel();

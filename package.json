@@ -40,6 +40,7 @@
   "dependencies": {
     "backbone": "^1.2.3",
     "d3": "^3.5.6",
+    "flux": "^2.1.1",
     "jquery": "^2.1.4",
     "lodash": "^3.10.1",
     "three": "^0.71.1",

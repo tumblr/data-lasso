@@ -5,6 +5,7 @@ var THREE = require('three');
 var events = require('../lib/events');
 var Class = require('../lib/class');
 var store = require('../store');
+var dispatcher = require('../dispatcher');
 
 /**
  * ## Selection Helper
@@ -151,8 +152,7 @@ var SelectionHelper = Class.extend({
         this.lassoPoints = [];
         this.lassoLineSegments = [];
 
-        events.trigger('datalasso:controls', {on: false});
-        events.trigger('datalasso:mode', {mode: 'selection'});
+        dispatcher.dispatch({actionType: 'selection-started'});
     },
 
     /**
@@ -165,8 +165,7 @@ var SelectionHelper = Class.extend({
 
         this.cancelSelection();
 
-        events.trigger('datalasso:controls', {on: true});
-        events.trigger('datalasso:mode', {mode: 'normal'});
+        dispatcher.dispatch({actionType: 'selection-stopped'});
     },
 
 
@@ -318,9 +317,7 @@ var SelectionHelper = Class.extend({
 
         selectedEntries = this.findEntriesInsideFrustum(frustum);
 
-        events.trigger('datalasso:selection:new', {
-            selectedEntries: selectedEntries
-        });
+        dispatcher.dispatch({actionType: 'selection-made', selectedEntries: selectedEntries});
     },
 
     /**
