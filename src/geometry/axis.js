@@ -32,7 +32,7 @@ var makeAxisTextGeometry = function (mappings, options) {
     var labelMeshes = [];
 
     _.each(mappings, function (axis, name) {
-        var geometry = new THREE.TextGeometry(name + (axis.attribute ? ' : ' + axis.attribute : ''), {
+        var geometry = new THREE.TextGeometry(name + (axis ? ' : ' + axis : ''), {
             size: options.legendSize,
             height: textGeometryHeight,
             curveSegments: textCurveSegments

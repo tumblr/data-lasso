@@ -8,7 +8,7 @@
 
                 <% _.each(attributes, function (attribute, attributeName) { %>
                     <% if (attributeName[0] !== '_') { %>
-                        <% if (axis.attribute && axis.attribute === attributeName) { %>
+                        <% if (axis && axis === attributeName) { %>
                             <option selected="selected" value="<%- attributeName %>"><%- attributeName %></option>
                         <% } else { %>
                             <option value="<%- attributeName %>"><%- attributeName %></option>

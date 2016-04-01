@@ -12,17 +12,24 @@ var datahelper = require('../helpers/data');
 
 var DataModel = Model.extend({
 
-    // TODO: Refactor to make it work and behave like a Model
+    // todo: move out to store/initialState.js
     defaults: {
         entries: null,
-        selectedEntries: [],
-        mappings: null,
         scales: null,
-        attributes: null
+        attributes: null,
+        selectedEntries: [],
+        snapshots: [],
+        controls: true,
+        mode: 'normal',
+        mappings: {
+            x: null,
+            y: null,
+            z: null,
+            color: null,
+        }
     },
 
-    initialize: function (options) {
-        this.options = options;
+    initialize: function () {
         this.setupEventListeners();
 
         // TODO: Put snapshots in it's own model
@@ -30,50 +37,65 @@ var DataModel = Model.extend({
     },
 
     setupEventListeners: function () {
-        // Data processing events
+        // Events are becoming a dispatcher
+        this.listenTo(events, 'options-set', function (action) {
+            this.options = action.options;
+        });
         this.listenTo(events, 'datalasso:data:uploaded', this.processNewData);
-
-        // Axis mappings events (selecting what attribute will be on what axis)
         this.listenTo(events, 'datalasso:axismappings:updated', this.processAxisMappings);
-
-        // Listen to things that have to do with selection
-        this.listenTo(events, 'datalasso:selection:new', this.newSelection);
+        this.listenTo(events, 'datalasso:selection:new', this.newSelection); // Name these better
         this.listenTo(events, 'datalasso:selection:zoomin', this.zoomIntoSelection);
         this.listenTo(events, 'datalasso:selection:zoomout', this.zoomOutOfSelection);
         this.listenTo(events, 'datalasso:selection:download', this.downloadSelectedAsCSV);
+        this.listenTo(events, 'datalasso:controls', function (action) {
+            this.set({controls: action.on});
+        });
+        this.listenTo(events, 'datalasso:hud:update', function (action) {
+            this.set({focused: action.focused});
+        });
+        this.listenTo(events, 'datalasso:hud:clear', function () {
+            this.set({focused: null});
+        });
+        this.listenTo(events, 'datalasso:mode', function (action) {
+            this.set({mode: action.mode});
+        });
     },
 
     /**
      * New data was uploaded
      */
-    processNewData: function (e) {
-        this.data = _.extend({}, this.defaults, datahelper.processInput(e.data, this.options));
-
-        events.trigger('datalasso:input:processed', {
-            data: this.data
+    processNewData: function (action) {
+        var data = datahelper.processInput(action.entries, this.options);
+        this.set({
+            entries: data.entries,
+            attributes: data.attributes,
+            scales: data.scales
         });
     },
 
     /**
      * New axis mappings were selected
      */
-    processAxisMappings: function (e) {
-        this.data.mappings = e.mappings;
-
-        events.trigger('datalasso:data:new', {
-            data: this.data
+    processAxisMappings: function (action) {
+        this.set({
+            mappings: action.mappings,
+            scales: datahelper.getUpdatedScales(this.get('entries'), this.options)
         });
     },
 
     /**
      * New selection was made
      */
-    newSelection: function (e) {
-        this.data.entries = e.entries;
-        this.data.selectedEntries = e.selectedEntries;
+    newSelection: function (action) {
+        var selectedEntries = action.selectedEntries;
+        var entries = _.transform(this.get('entries'), function (result, entry) {
+            entry.isSelected = (selectedEntries.indexOf(entry.__id) >= 0);
+            result.push(entry);
+        });
 
-        events.trigger('datalasso:data:new', {
-            data: this.data
+        this.set({
+            entries: entries,
+            selectedEntries: selectedEntries
         });
     },
 
@@ -81,22 +103,19 @@ var DataModel = Model.extend({
      * Selection is zoomed in
      */
     zoomIntoSelection: function () {
-        if (this.data.selectedEntries && this.data.selectedEntries.length < this.data.entries.length) {
+        var newEntries = _.transform(this.get('entries'), function(result, entry) {
+            if (entry.isSelected) {
+                entry.isSelected = false;
+                result.push(entry);
+            }
+        });
 
-            this.saveDataSnapshot();
-            this.data.entries = _.clone(this.data.selectedEntries);
-            this.data.selectedEntries = [];
-            this.data.scales = datahelper.getUpdatedScales(this.data.entries, this.options);
-
-            events.trigger('datalasso:data:new', {
-                data: this.data
-            });
-
-            events.trigger('datalasso:selection:new', {
-                entries: this.data.entries,
-                selectedEntries: this.data.selectedEntries
-            });
-        }
+        this.saveDataSnapshot();
+        this.set({
+            entries: newEntries,
+            selectedEntries: [],
+            scales: datahelper.getUpdatedScales(newEntries, this.options)
+        })
     },
 
     /**
@@ -104,17 +123,6 @@ var DataModel = Model.extend({
      */
     zoomOutOfSelection: function () {
         this.restoreLastDataSnapshot();
-
-        // Reset the drawing data
-        events.trigger('datalasso:data:new', {
-            data: this.data
-        });
-
-        // Reset the selection to where it was before
-        events.trigger('datalasso:selection:new', {
-            entries: this.data.entries,
-            selectedEntries: this.data.selectedEntries
-        });
     },
 
     /**
@@ -122,29 +130,27 @@ var DataModel = Model.extend({
      * chronological snapshots
      */
     saveDataSnapshot: function () {
-        this.dataSnapshots.push(_.clone(this.data));
-        events.trigger('datalasso:data:snapshots', this.dataSnapshots.length);
+        var snapshots = this.get('snapshots') || [];
+        snapshots.push(_.pick(this.toJSON(), ['entries', 'mappings', 'scales', 'attributes', 'selectedEntries']));
+        this.set({
+            snapshots: snapshots
+        });
     },
 
     /**
      * Get last snapshot stored, and use that as current data object
      */
     restoreLastDataSnapshot: function () {
-        this.data = this.dataSnapshots.pop();
-        this.restoreSelection();
-        events.trigger('datalasso:data:snapshots', this.dataSnapshots.length);
-    },
-
-    /**
-     * Restore the selection attributes on entries based on the list
-     * of selected entries
-     */
-    restoreSelection: function () {
-        var selectedIds = _.pluck(this.data.selectedEntries, '__id');
-
-        _.each(this.data.entries, function (entry, index) {
-            this.data.entries[index].isSelected = selectedIds.indexOf(entry.__id) > -1;
-        }, this);
+        var snapshots = this.get('snapshots');
+        var lastSnapshot = snapshots.pop();
+        this.set({
+            entries: lastSnapshot.entries,
+            mappings: lastSnapshot.mappings,
+            scales: lastSnapshot.scales,
+            attributes: lastSnapshot.attributes,
+            selectedEntries: lastSnapshot.selectedEntries,
+            snapshots: snapshots,
+        });
     },
 
     /**
@@ -153,15 +159,15 @@ var DataModel = Model.extend({
     downloadSelectedAsCSV: function () {
         var csvContent = 'data:text/csv;charset=utf-8,';
 
-        csvContent += _.keys(this.data.attributes).join(',');
+        csvContent += _.keys(this.get('attributes')).join(',');
 
-        _.each(this.data.selectedEntries, function (entry, index) {
+        _.each(this.get('selectedEntries'), function (entry, index) {
             csvContent += _.values(entry).join(',');
-            csvContent += index < this.data.selectedEntries.length ? '\n' : '';
+            csvContent += index < this.get('selectedEntries').length ? '\n' : '';
         }, this);
 
         window.open(encodeURI(csvContent));
     }
 });
 
-module.exports = DataModel;
+module.exports = new DataModel();

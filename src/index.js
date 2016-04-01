@@ -2,7 +2,7 @@
 
 var _ = require('lodash');
 var Backbone = require('backbone');
-var DataModel = require('./models/Data');
+var store = require('./models/Data');
 var Uploader = require('./views/Uploader');
 var AxisControls = require('./views/AxisControls');
 var Graph = require('./views/Graph');
@@ -32,12 +32,13 @@ var DataLassoView = Backbone.View.extend({
     },
 
     initialize: function (options) {
+        this.modules = options.modules;
         this.options = _.defaults({}, _.omit(options, 'modules'), this.defaults);
 
-        this.data = new DataModel(this.options);
+        events.trigger('options-set', {options: this.options});
 
-        if (options.modules) {
-            this.initializeModules(options.modules);
+        if (this.modules) {
+            this.initializeModules(this.modules);
         }
 
         this.render();
