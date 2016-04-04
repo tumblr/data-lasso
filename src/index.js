@@ -7,6 +7,8 @@ var events = require('./lib/events');
 var styles = require('./styles/index.scss');
 var dispatcher = require('./dispatcher');
 var defaults = require('./helpers/optionDefaults');
+var store = require('./store');
+var dispatcher = require('./dispatcher');
 
 var Uploader = require('./views/Uploader');
 var AxisControls = require('./views/AxisControls');
@@ -47,23 +49,29 @@ var DataLassoView = Backbone.View.extend({
      *
      * Each module coming to Data Lasso is defined by a name
      * and a constructor function. That constructor function will
-     * be called for every module with data lasso event bus and
-     * container element in options
+     * be called for every module with a hash containing:
+     *
+     *  - Event bus
+     *  - Container element
+     *  - Store
+     *  - Dispatcher
      */
     initializeModules: function (modules) {
         this.modules = {};
 
-        _.each(modules, function (module, name) {
+        _.forEach(modules, function (module, name) {
             this.modules[name] = new module.constructor({
                 events: events,
-                $container: this.$el
+                store: store,
+                dispatcher: dispatcher,
+                $container: this.$el,
             });
         }, this);
     },
 
     render: function () {
         styles.append();
-        
+
         // Uploader
         this.uploader = new Uploader();
         this.$el.append(this.uploader.render().el);
@@ -89,7 +97,7 @@ var DataLassoView = Backbone.View.extend({
         this.$el.append(this.selectionControls.render().el);
 
         return this;
-    }
+    },
 });
 
 module.exports = DataLassoView;
