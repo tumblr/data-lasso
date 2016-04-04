@@ -2,7 +2,6 @@
 
 var _ = require('lodash');
 var Model = require('backbone').Model;
-var events = require('../lib/events');
 var datahelper = require('../helpers/data');
 var initialState = require('./initialState');
 var dispatcher = require('../dispatcher');
@@ -16,7 +15,7 @@ var dispatcher = require('../dispatcher');
  *
  * Views listen for changes in this Store, and never should modify it directly.
  *
- * In it's essence, it is a singleton Backbone model that both provides storage and
+ * In its essence, it is a singleton Backbone model that both provides storage and
  * a mechanism for communicating changes to a store downstream.
  *
  * Benefit of the dispatcher: No simultaneous execution.
@@ -64,7 +63,7 @@ var DataModel = Model.extend({
                 break;
 
             case 'entry-hovered':
-                this.set({focused: action.entry});
+                this.onEntryHover(action);
                 break;
 
             case 'zoom-in':
@@ -81,6 +80,9 @@ var DataModel = Model.extend({
      * New data was uploaded. Parse it to get attributes and scales.
      */
     onFileUpload: function (action) {
+        if (!action.entries) {
+            throw new Error('New data does not contain any entries');
+        }
         var data = datahelper.processInput(action.entries, this.options);
         this.set({
             entries: data.entries,
@@ -111,19 +113,12 @@ var DataModel = Model.extend({
     },
 
     /**
-     * New axis mappings were selected for the visualization
-     */
-    onNewMappings: function (action) {
-        this.set({
-            mappings: action.mappings,
-            scales: datahelper.getUpdatedScales(this.get('entries'), this.options)
-        });
-    },
-
-    /**
      * New selection was made
      */
     onNewSelection: function (action) {
+        if (!action.selectedEntries) {
+            throw new Error('Selected enties list is empty');
+        }
         var selectedEntries = action.selectedEntries;
         var entries = _.transform(this.get('entries'), function (result, entry) {
             entry.isSelected = (selectedEntries.indexOf(entry.__id) >= 0);
@@ -132,7 +127,30 @@ var DataModel = Model.extend({
 
         this.set({
             entries: entries,
-            selectedEntries: selectedEntries
+            selectedEntries: selectedEntries,
+        });
+    },
+
+    /**
+     * New axis mappings were selected for the visualization
+     */
+    onNewMappings: function (action) {
+        if (!action.mappings) {
+            throw new Error('Axis mappings list is empty');
+        }
+        this.set({
+            mappings: action.mappings,
+            scales: datahelper.getUpdatedScales(this.get('entries'), this.options),
+        });
+    },
+
+    /**
+     * Entry was hovered over inside the visualization. `action.entry` can be null to
+     * signal that nothing is selected after raytracing
+     */
+    onEntryHover: function (action) {
+        this.set({
+            focused: action.entry,
         });
     },
 
@@ -151,8 +169,8 @@ var DataModel = Model.extend({
         this.set({
             entries: newEntries,
             selectedEntries: [],
-            scales: datahelper.getUpdatedScales(newEntries, this.options)
-        })
+            scales: datahelper.getUpdatedScales(newEntries, this.options),
+        });
     },
 
     /**
@@ -169,7 +187,7 @@ var DataModel = Model.extend({
         var snapshots = this.get('snapshots') || [];
         snapshots.push(_.pick(this.toJSON(), ['entries', 'mappings', 'scales', 'attributes', 'selectedEntries']));
         this.set({
-            snapshots: snapshots
+            snapshots: snapshots,
         });
     },
 

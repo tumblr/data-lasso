@@ -110,7 +110,7 @@ var GraphView = Backbone.View.extend({
         // Kick off the render loop
         this.animate();
 
-        this.listenTo(store, 'change:entries change:mappings change:scales change:attributes change:selectedEntries', this.redrawEverything);
+        this.listenTo(store, 'change:entries change:mappings change:scales change:attributes change:selectedEntries', _.debounce(this.redrawEverything));
     },
 
     animate: function () {
