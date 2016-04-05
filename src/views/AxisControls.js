@@ -21,7 +21,7 @@ var AxisControls = Backbone.View.extend({
     className: 'axis-controls',
 
     events: {
-        'submit form': 'onSubmit'
+        'submit form': 'onSubmit',
     },
 
     initialize: function () {
@@ -60,7 +60,7 @@ var AxisControls = Backbone.View.extend({
         }));
 
         return this;
-    }
+    },
 });
 
 module.exports = AxisControls;

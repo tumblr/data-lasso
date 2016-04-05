@@ -88,7 +88,8 @@ var DataModel = Model.extend({
             entries: data.entries,
             attributes: data.attributes,
             scales: data.scales,
-            snapshots: [],
+            mappings: initialState.mappings,
+            snapshots: initialState.snapshots,
         });
     },
 
