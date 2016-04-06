@@ -24,8 +24,8 @@ var MouseHelper =  Class.extend({
         this.vector.x = 0;
         this.vector.y = 0;
 
-        this.$container[0].addEventListener('mousemove', _.bind(this.onMouseMove, this), false );
-        this.$container[0].addEventListener('mousedown', _.bind(this.onMouseDown, this), false );
+        this.$container[0].addEventListener('mousemove', _.bind(this.onMouseMove, this), false);
+        this.$container[0].addEventListener('mousedown', _.bind(this.onMouseDown, this), false);
     },
 
     /**
@@ -44,12 +44,12 @@ var MouseHelper =  Class.extend({
         e.preventDefault();
 
         this.vector.x = (e.offsetX / window.innerWidth) * 2 - 1;
-        this.vector.y = - (e.offsetY / window.innerHeight) * 2 + 1;
+        this.vector.y = -((e.offsetY / window.innerHeight) * 2 + 1);
 
         events.trigger('datalasso:mouse:move', {
             vector: this.vector,
             x: e.offsetX,
-            y: e.offsetY
+            y: e.offsetY,
         });
     },
 
@@ -59,9 +59,9 @@ var MouseHelper =  Class.extend({
     onMouseDown: function (e) {
         events.trigger('datalasso:mouse:down', {
             button: e.button,
-            vector: this.vector
+            vector: this.vector,
         });
-    }
+    },
 });
 
 

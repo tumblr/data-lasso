@@ -35,12 +35,12 @@ var makeAxisTextGeometry = function (mappings, options) {
         var geometry = new THREE.TextGeometry(name + (axis ? ' : ' + axis : ''), {
             size: options.legendSize,
             height: textGeometryHeight,
-            curveSegments: textCurveSegments
+            curveSegments: textCurveSegments,
         });
 
         var material = new THREE.MeshBasicMaterial({
             color: options.legendColor,
-            transparent: true
+            transparent: true,
         });
 
         material.opacity = legendOpacity;
@@ -71,23 +71,23 @@ var makeAxisTextGeometry = function (mappings, options) {
 var makeAxisLinesGeometry = function (options) {
     var size = options.graphSize;
 
-    var vertices = new Float32Array( [
+    var vertices = new Float32Array([
         0, 0, 0,  size, 0, 0,
         0, 0, 0,  0, size, 0,
-        0, 0, 0,  0, 0, size
-    ] );
+        0, 0, 0,  0, 0, size,
+    ]);
 
-    var colors = new Float32Array( [
+    var colors = new Float32Array([
         axisLineColor[0], axisLineColor[1], axisLineColor[2],   axisLineColor[0], axisLineColor[1], axisLineColor[2],
         axisLineColor[0], axisLineColor[1], axisLineColor[2],   axisLineColor[0], axisLineColor[1], axisLineColor[2],
-        axisLineColor[0], axisLineColor[1], axisLineColor[2],   axisLineColor[0], axisLineColor[1], axisLineColor[2]
-    ] );
+        axisLineColor[0], axisLineColor[1], axisLineColor[2],   axisLineColor[0], axisLineColor[1], axisLineColor[2],
+    ]);
 
     var geometry = new THREE.BufferGeometry();
-    geometry.addAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
-    geometry.addAttribute( 'color', new THREE.BufferAttribute( colors, 3 ) );
+    geometry.addAttribute('position', new THREE.BufferAttribute(vertices, 3));
+    geometry.addAttribute('color', new THREE.BufferAttribute(colors, 3));
 
-    var material = new THREE.LineBasicMaterial( { vertexColors: THREE.VertexColors } );
+    var material = new THREE.LineBasicMaterial({vertexColors: THREE.VertexColors});
 
     return new THREE.Line(geometry, material);
 };

@@ -77,5 +77,5 @@ var ExampleModule = Backbone.View.extend({
         attributes || (attributes = []);
         this.$el.html(this.template({attributes: attributes}));
         this.$container.append(this.$el);
-    }
+    },
 });

@@ -3,7 +3,6 @@
 var _ = require('lodash');
 var d3 = require('d3');
 var Backbone = require('backbone');
-var events = require('../lib/events');
 var template = require('../templates/uploader.tpl');
 var store = require('../store');
 var dispatcher = require('../dispatcher');
@@ -21,13 +20,13 @@ var UploaderView = Backbone.View.extend({
     className: 'uploader',
 
     events: {
-        'submit form': 'onFormSubmit'
+        'submit form': 'onFormSubmit',
     },
 
     /**
      * Get whatever filetype was checked
      *
-     * @returns 'csv'|'tsv'|'json'
+     * @returns {string} : Either 'csv', 'tsv' or 'json'
      */
     getSelectedType: function () {
         var $selectedToggle = this.$formatToggles.filter(':checked');
@@ -85,7 +84,7 @@ var UploaderView = Backbone.View.extend({
         this.$formatToggles = this.$('[name="type"]');
 
         return this;
-    }
+    },
 });
 
 module.exports = UploaderView;

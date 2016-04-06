@@ -54,7 +54,7 @@ var GraphView = Backbone.View.extend({
 
         // Camera
         this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, this.options.graphSize * 10);
-        this.camera.position.set(this.options.graphSize*2, this.options.graphSize*2, this.options.graphSize*2);
+        this.camera.position.set(this.options.graphSize * 2, this.options.graphSize * 2, this.options.graphSize * 2);
 
         // Mouse vector
         this.mouse = mouseVectorHelper(this.$el);
@@ -69,7 +69,7 @@ var GraphView = Backbone.View.extend({
         this.controls = new OrbitControls(this.camera, this.$el[0]);
         this.controls.damping = 0.2;
         this.controls.addEventListener('change', _.bind(this.onControlsUpdate, this));
-        this.controls.target = new THREE.Vector3(this.options.graphSize/2, this.options.graphSize/2, this.options.graphSize/2);
+        this.controls.target = new THREE.Vector3(this.options.graphSize / 2, this.options.graphSize / 2, this.options.graphSize / 2);
         this.listenTo(store, 'change:controls', function () {
             store.get('controls') ? this.enableControls() : this.disableControls();
         });
@@ -81,12 +81,12 @@ var GraphView = Backbone.View.extend({
         // Materials
         // TODO: Abstract that outside
         var shaderAttributes = {
-            size: {type: 'f', value: null },
-            customColor: {type: 'c', value: null }
+            size: {type: 'f', value: null},
+            customColor: {type: 'c', value: null},
         };
         var shaderUniforms = {
-            color: {type: 'c', value: new THREE.Color( 0xffffff )},
-            texture: {type: 't', value: textures.dotTexture()}
+            color: {type: 'c', value: new THREE.Color(0xffffff)},
+            texture: {type: 't', value: textures.dotTexture()},
         };
         this.shaderMaterial = new THREE.ShaderMaterial({
             uniforms:       shaderUniforms,
@@ -97,7 +97,7 @@ var GraphView = Backbone.View.extend({
 
             blending:       THREE.AdditiveBlending,
             depthTest:      false,
-            transparent:    true
+            transparent:    true,
         });
 
         // Raycaster
@@ -154,7 +154,7 @@ var GraphView = Backbone.View.extend({
     onWindowResize: function () {
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         this.camera.aspect = window.innerWidth / window.innerHeight;
-        this.camera.updateProjectionMatrix()
+        this.camera.updateProjectionMatrix();
     },
 
     /**
@@ -220,7 +220,7 @@ var GraphView = Backbone.View.extend({
         this.geometry = new THREE.BufferGeometry();
 
         var positions = new Float32Array(this.data.entries.length * 3);
-        var colors = new Float32Array(this.data.entries.length * 3 );
+        var colors = new Float32Array(this.data.entries.length * 3);
         var sizes = new Float32Array(this.data.entries.length);
         var x;
         var y;
@@ -278,9 +278,7 @@ var GraphView = Backbone.View.extend({
             }, this);
         }
 
-        /**************************** DOWN HERE ****/
         this.axisMeshes = axisGeometry(this.data.mappings, this.options);
-
         this.scene.add.apply(this.scene, this.axisMeshes);
     },
 
@@ -303,7 +301,7 @@ var GraphView = Backbone.View.extend({
 
     remove: function () {
         window.removeEventListener('resize', _.bind(this.onWindowResize, this));
-    }
+    },
 });
 
 module.exports = GraphView;

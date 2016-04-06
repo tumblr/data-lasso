@@ -40,7 +40,7 @@ var HudView = Backbone.View.extend({
     reposition: function (e) {
         this.$el.css({
             top: e.y + margin,
-            left: e.x + margin
+            left: e.x + margin,
         });
     },
 
@@ -51,7 +51,7 @@ var HudView = Backbone.View.extend({
         var entry = store.get('focused');
         this.$el.html(template({
             entry: entry,
-            attributesInUse: this.attributesInUse
+            attributesInUse: this.attributesInUse,
         }));
     },
 
@@ -59,7 +59,7 @@ var HudView = Backbone.View.extend({
      * When new axis mappings are selected, we store
      * which attributes were selected to only use them
      */
-    onNewMappings: function (store) {
+    onNewMappings: function () {
         var mappings = store.get('mappings');
 
         this.attributesInUse = _.map(mappings, function (axis) {
@@ -69,7 +69,7 @@ var HudView = Backbone.View.extend({
 
     render: function () {
         return this;
-    }
+    },
 });
 
 module.exports = HudView;

@@ -20,7 +20,7 @@ var DataHelper = {
         return {
             entries: entries,
             attributes: attributes,
-            scales: scales
+            scales: scales,
         };
     },
 
@@ -91,7 +91,7 @@ var DataHelper = {
         _.each(entries[0], function (value, name) {
             attributes[name] = {};
             if (/^\d+$/.test(value)) {
-                value = parseInt(value);
+                value = parseInt(value, 10);
                 attributes[name].type = 'numeric';
                 attributes[name].min = value;
                 attributes[name].max = value;
@@ -115,7 +115,7 @@ var DataHelper = {
                         attributes[name].categories[value] += 1;
                     }
                 } else if (attributes[name].type === 'numeric') {
-                    value = parseInt(value);
+                    value = parseInt(value, 10);
                     if (value < attributes[name].min) {
                         attributes[name].min = value;
                     }
@@ -171,7 +171,7 @@ var DataHelper = {
         }, this);
 
         return scales;
-    }
+    },
 };
 
 module.exports = DataHelper;

@@ -51,7 +51,7 @@ var SelectionHelper = Class.extend({
 
         store.on('change:entries', _.bind(this.onEntriesChange, this));
 
-        document.addEventListener('keyup', _.bind(this.onDocumentKeyUp, this), false );
+        document.addEventListener('keyup', _.bind(this.onDocumentKeyUp, this), false);
     },
 
     onEntriesChange: function () {
@@ -71,7 +71,7 @@ var SelectionHelper = Class.extend({
             this.scene.add(this.projectionPlane);
         }
 
-        var vector = new THREE.Vector3(0, 0 ,-1);
+        var vector = new THREE.Vector3(0, 0, -1);
 
         vector.applyQuaternion(this.camera.quaternion);
         vector.multiplyScalar(planeDistanceFromCamera);
@@ -208,7 +208,6 @@ var SelectionHelper = Class.extend({
 
         return new THREE.Line(geometry, material);
     },
-
 
 
     /**
@@ -369,7 +368,7 @@ var SelectionHelper = Class.extend({
      * point is 'inside' the plane (on the back side of the plane)
      */
     isPointInsideFrustum: function (point, frustum) {
-        for (var i=0; i < frustum.length; i++) {
+        for (var i = 0; i < frustum.length; i++) {
             var distance = frustum[i].distanceToPoint(point);
 
             if (distance > 0) {
@@ -377,7 +376,7 @@ var SelectionHelper = Class.extend({
             }
         }
         return true;
-    }
+    },
 });
 
 module.exports = SelectionHelper;
