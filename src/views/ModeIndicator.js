@@ -3,6 +3,7 @@
 var Backbone = require('backbone');
 var events = require('../lib/events');
 var template = require('../templates/mode-indicator.tpl');
+var store = require('../store');
 
 /**
  * ## Mode Indicator View
@@ -16,30 +17,23 @@ var ModeIndicator = Backbone.View.extend({
 
     className: 'mode-indicator',
 
-    mode: 'normal',
-
     initialize: function () {
         this.setupEventListeners();
     },
 
     setupEventListeners: function () {
-        this.listenTo(events, 'datalasso:mode:selection', this.toggleSelectionMode);
-        this.listenTo(events, 'datalasso:mode:normal', this.toggleNormalMode);
+        this.listenTo(store, 'change:mode', this.toggleMode);
     },
 
-    toggleSelectionMode: function () {
-        this.mode = 'selection';
-        this.render();
+    toggleMode: function () {
+        this.render(store.get('mode'));
     },
 
-    toggleNormalMode: function () {
-        this.mode = 'normal';
-        this.render();
-    },
+    render: function (mode) {
+        mode || (mode = 'normal');
 
-    render: function () {
         this.$el.html(template({
-            mode: this.mode
+            mode: mode
         }));
 
         return this;

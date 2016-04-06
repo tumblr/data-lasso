@@ -2,42 +2,42 @@
 
 var _ = require('lodash');
 var Backbone = require('backbone');
-var DataModel = require('./models/Data');
+
+var events = require('./lib/events');
+var styles = require('./styles/index.scss');
+var dispatcher = require('./dispatcher');
+var defaults = require('./helpers/optionDefaults');
+var store = require('./store');
+var dispatcher = require('./dispatcher');
+
 var Uploader = require('./views/Uploader');
 var AxisControls = require('./views/AxisControls');
 var Graph = require('./views/Graph');
 var Hud = require('./views/Hud');
 var ModeIndicator = require('./views/ModeIndicator');
 var SelectionControls = require('./views/SelectionControls');
-var events = require('./lib/events');
-var styles = require('./styles/index.scss');
+
+/**
+ * # Data Lasso View
+ *
+ * Main view for Data Lasso which handles receiving of options,
+ * initializing sub views and modules, if any
+ */
 
 var DataLassoView = Backbone.View.extend({
 
     className: 'datalasso-container',
 
-    /**
-     * All options that can be overwritten
-     * from outside of Data Lasso defined below.
-     */
-    defaults: {
-        // Size of the graph
-        graphSize: 2000,
-
-        // Size of the axis legend text
-        legendSize: 50,
-
-        // Color of the legend text
-        legendColor: 0xffffff
-    },
+    defaults: defaults,
 
     initialize: function (options) {
+        this.modules = options.modules;
         this.options = _.defaults({}, _.omit(options, 'modules'), this.defaults);
 
-        this.data = new DataModel(this.options);
+        dispatcher.dispatch({actionType: 'options-set', options: this.options});
 
-        if (options.modules) {
-            this.initializeModules(options.modules);
+        if (this.modules) {
+            this.initializeModules(this.modules);
         }
 
         this.render();
@@ -49,23 +49,29 @@ var DataLassoView = Backbone.View.extend({
      *
      * Each module coming to Data Lasso is defined by a name
      * and a constructor function. That constructor function will
-     * be called for every module with data lasso event bus and
-     * container element in options
+     * be called for every module with a hash containing:
+     *
+     *  - Event bus
+     *  - Container element
+     *  - Store
+     *  - Dispatcher
      */
     initializeModules: function (modules) {
         this.modules = {};
 
-        _.each(modules, function (module, name) {
+        _.forEach(modules, function (module, name) {
             this.modules[name] = new module.constructor({
                 events: events,
-                $container: this.$el
+                store: store,
+                dispatcher: dispatcher,
+                $container: this.$el,
             });
         }, this);
     },
 
     render: function () {
         styles.append();
-        
+
         // Uploader
         this.uploader = new Uploader();
         this.$el.append(this.uploader.render().el);
@@ -91,7 +97,7 @@ var DataLassoView = Backbone.View.extend({
         this.$el.append(this.selectionControls.render().el);
 
         return this;
-    }
+    },
 });
 
 module.exports = DataLassoView;

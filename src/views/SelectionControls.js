@@ -3,6 +3,8 @@
 var Backbone = require('backbone');
 var events = require('../lib/events');
 var template = require('../templates/selection-controls.tpl');
+var store = require('../store');
+var dispatcher = require('../dispatcher');
 
 /**
  * ## Selection View
@@ -29,59 +31,53 @@ var SelectionControls = Backbone.View.extend({
     },
 
     setupEventListeners: function () {
-        this.listenTo(events, 'datalasso:selection:new', this.onNewSelection);
-        this.listenTo(events, 'datalasso:data:new', this.onNewData);
-        this.listenTo(events, 'datalasso:data:snapshots', this.onSnapshotsLengthChange);
+        this.listenTo(store, 'change:selectedEntries', this.onUpdate);
+        this.listenTo(store, 'change:snapshots', this.onUpdate);
     },
 
-    onNewData: function (e) {
-        this.entriesTotal = e.data.entries.length;
-    },
+    onUpdate: function () {
+        var entriesTotal = store.get('entries').length;
+        var selectedEntriesTotal = _.filter(store.get('entries'), 'isSelected').length;
+        var snapshotCount = store.get('snapshots').length;
 
-    onSnapshotsLengthChange: function (count) {
-        this.snapshotCount = count;
-        this.render();
-    },
-
-    /**
-     * ## On New Selection
-     *
-     * We received some new data on selections
-     */
-    onNewSelection: function (e) {
-        this.selectedEntries = e.selectedEntries;
-        this.render();
+        this.render(entriesTotal, selectedEntriesTotal, snapshotCount);
     },
 
     /**
      * ## Zoom INTO Selection
-     *
-     * Sends out an event and updates state
      */
     zoomIntoSelection: function () {
-        events.trigger('datalasso:selection:zoomin');
-        this.render();
+        dispatcher.dispatch({actionType: 'zoom-in'});
     },
 
     /**
      * ## Zoom OUT OF Selection
-     *
-     * Just the opposite
      */
     zoomOutOfSelection: function () {
-        events.trigger('datalasso:selection:zoomout');
-        this.render();
+        dispatcher.dispatch({actionType: 'zoom-out'});
     },
 
+    /**
+     * Generate CSV and trigger download
+     */
     downloadSelected: function () {
-        events.trigger('datalasso:selection:download');
+        var csvContent = 'data:text/csv;charset=utf-8,';
+        csvContent += _.keys(store.get('attributes')).join(',');
+
+        _.each(store.get('entries'), function (entry, index) {
+            if (entry.isSelected) {
+                csvContent += _.values(entry).join(',');
+                csvContent += (index < store.get('selectedEntries').length) ? '\n' : '';
+            }
+        }, this);
+        window.open(encodeURI(csvContent));
     },
 
-    render: function () {
+    render: function (entriesTotal, selectedEntriesTotal, snapshotCount) {
         this.$el.html(template({
-            selectedEntries: this.selectedEntries,
-            snapshotCount: this.snapshotCount || 0,
-            entriesTotal: this.entriesTotal
+            selectedEntriesTotal: selectedEntriesTotal || 0,
+            snapshotCount: snapshotCount || 0,
+            entriesTotal: entriesTotal || 0,
         }));
 
         return this;

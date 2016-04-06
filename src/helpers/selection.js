@@ -4,6 +4,8 @@ var _ = require('lodash');
 var THREE = require('three');
 var events = require('../lib/events');
 var Class = require('../lib/class');
+var store = require('../store');
+var dispatcher = require('../dispatcher');
 
 /**
  * ## Selection Helper
@@ -41,29 +43,19 @@ var SelectionHelper = Class.extend({
     initialize: function (scene, camera) {
         this.camera = camera;
         this.scene = scene;
-
         this.selectionMode = false;
 
-        this.setUpEventListeners();
-    },
-
-    /**
-     * Set up event listeners
-     */
-    setUpEventListeners: function () {
         events.on('datalasso:mouse:move', _.bind(this.onMouseMove, this));
         events.on('datalasso:mouse:down', _.bind(this.onMouseDown, this));
-        events.on('datalasso:data:new', _.bind(this.updateData, this));
         events.on('datalasso:camera:moved', _.bind(this.updateProjectionPlane, this));
+
+        store.on('change:entries', _.bind(this.onEntriesChange, this));
 
         document.addEventListener('keyup', _.bind(this.onDocumentKeyUp, this), false );
     },
 
-    /**
-     * Update graph entries when new data comes in
-     */
-    updateData: function (e) {
-        this.entries = e.data.entries;
+    onEntriesChange: function () {
+        this.entries = store.get('entries');
     },
 
     /**
@@ -152,8 +144,7 @@ var SelectionHelper = Class.extend({
         this.lassoPoints = [];
         this.lassoLineSegments = [];
 
-        events.trigger('datalasso:controls:off');
-        events.trigger('datalasso:mode:selection');
+        dispatcher.dispatch({actionType: 'selection-started'});
     },
 
     /**
@@ -166,8 +157,7 @@ var SelectionHelper = Class.extend({
 
         this.cancelSelection();
 
-        events.trigger('datalasso:controls:on');
-        events.trigger('datalasso:mode:normal');
+        dispatcher.dispatch({actionType: 'selection-stopped'});
     },
 
 
@@ -319,10 +309,7 @@ var SelectionHelper = Class.extend({
 
         selectedEntries = this.findEntriesInsideFrustum(frustum);
 
-        events.trigger('datalasso:selection:new', {
-            entries: this.entries,
-            selectedEntries: selectedEntries
-        });
+        dispatcher.dispatch({actionType: 'selection-made', selectedEntries: selectedEntries});
     },
 
     /**
@@ -360,17 +347,14 @@ var SelectionHelper = Class.extend({
      * the frustum of users's selection
      *
      * @param frustum - frustum-like object
-     * @returns {Array} of selected entries
+     * @returns {Array} of selected entry ids
      */
     findEntriesInsideFrustum: function (frustum) {
         var selected = [];
 
-        _.each(this.entries, function (entry, index) {
+        _.each(this.entries, function (entry) {
             if (this.isPointInsideFrustum(new THREE.Vector3(entry.x, entry.y, entry.z), frustum)) {
-                this.entries[index].isSelected = true;
-                selected.push(entry);
-            } else {
-                this.entries[index].isSelected = false;
+                selected.push(entry.__id);
             }
         }, this);
 

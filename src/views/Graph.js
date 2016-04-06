@@ -11,6 +11,8 @@ var axisGeometry = require('../geometry/axis');
 var mouseVectorHelper = require('../helpers/mousevector');
 var shaders = require('../templates/shaders.tpl');
 var textures = require('../helpers/texture');
+var store = require('../store');
+var dispatcher = require('../dispatcher');
 
 
 /**
@@ -68,8 +70,9 @@ var GraphView = Backbone.View.extend({
         this.controls.damping = 0.2;
         this.controls.addEventListener('change', _.bind(this.onControlsUpdate, this));
         this.controls.target = new THREE.Vector3(this.options.graphSize/2, this.options.graphSize/2, this.options.graphSize/2);
-        this.listenTo(events, 'datalasso:controls:off', this.disableControls);
-        this.listenTo(events, 'datalasso:controls:on', this.enableControls);
+        this.listenTo(store, 'change:controls', function () {
+            store.get('controls') ? this.enableControls() : this.disableControls();
+        });
 
         // Lights
         var ambientLight = new THREE.AmbientLight(0xffffff);
@@ -107,7 +110,7 @@ var GraphView = Backbone.View.extend({
         // Kick off the render loop
         this.animate();
 
-        this.listenTo(events, 'datalasso:data:new', this.redrawEverything);
+        this.listenTo(store, 'change:entries change:mappings change:scales change:attributes change:selectedEntries', _.debounce(this.redrawEverything));
     },
 
     animate: function () {
@@ -124,18 +127,11 @@ var GraphView = Backbone.View.extend({
     /**
      * Event handlers
      */
-
-    redrawEverything: function (e) {
-        this.data = e.data;
+    redrawEverything: function () {
+        this.data = _.pick(store.toJSON(), ['entries', 'mappings', 'scales', 'attributes']);
 
         this.updateGeometry();
         this.updateAxisGeometry();
-    },
-
-    redrawPoints: function (e) {
-        this.data.entries = e.entries;
-
-        this.updateGeometry();
     },
 
     disableControls: function () {
@@ -188,7 +184,7 @@ var GraphView = Backbone.View.extend({
             if (intersections.length) {
                 var entry = this.data.entries[intersections[0].index];
 
-                events.trigger('datalasso:hud:update', entry);
+                dispatcher.dispatch({actionType: 'entry-hovered', entry: entry});
 
                 if (entry.isSelected) {
                     size[intersections[0].index] = this.pointSize * this.pointHoverFactor * this.pointSelectionFactor;
@@ -196,7 +192,7 @@ var GraphView = Backbone.View.extend({
                     size[intersections[0].index] = this.pointSize * this.pointHoverFactor;
                 }
             } else {
-                events.trigger('datalasso:hud:update');
+                dispatcher.dispatch({actionType: 'entry-hovered', entry: null});
             }
 
             this.geometry.attributes.size.needsUpdate = true;
@@ -236,9 +232,9 @@ var GraphView = Backbone.View.extend({
         this.raycaster.params.PointCloud.threshold = this.pointSize / 2;
 
         _.each(this.data.entries, function (entry, index) {
-            x = this.data.mappings.x.attribute ? this.data.scales[this.data.mappings.x.attribute](entry[this.data.mappings.x.attribute]) : 0;
-            y = this.data.mappings.y.attribute ? this.data.scales[this.data.mappings.y.attribute](entry[this.data.mappings.y.attribute]) : 0;
-            z = this.data.mappings.z.attribute ? this.data.scales[this.data.mappings.z.attribute](entry[this.data.mappings.z.attribute]) : 0;
+            x = this.data.mappings.x ? this.data.scales[this.data.mappings.x](entry[this.data.mappings.x]) : 0;
+            y = this.data.mappings.y ? this.data.scales[this.data.mappings.y](entry[this.data.mappings.y]) : 0;
+            z = this.data.mappings.z ? this.data.scales[this.data.mappings.z](entry[this.data.mappings.z]) : 0;
 
             positions[3 * index + 0] = x;
             positions[3 * index + 1] = y;
@@ -251,7 +247,7 @@ var GraphView = Backbone.View.extend({
             if (entry.isSelected) {
                 color.setHSL(0.7, 1, 1);
             } else {
-                var hue = this.data.mappings.color.attribute ? this.data.scales[this.data.mappings.color.attribute](entry[this.data.mappings.color.attribute]) / this.options.graphSize * 0.25 : 0.15;
+                var hue = this.data.mappings.color ? this.data.scales[this.data.mappings.color](entry[this.data.mappings.color]) / this.options.graphSize * 0.25 : 0.15;
                 color.setHSL(hue, 1, 0.5);
             }
 

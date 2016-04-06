@@ -4,6 +4,7 @@ var _ = require('lodash');
 var Backbone = require('backbone');
 var events = require('../lib/events');
 var template = require('../templates/hud.tpl');
+var store = require('../store');
 
 /**
  * ## Heads Up Display View
@@ -28,9 +29,9 @@ var HudView = Backbone.View.extend({
      * Set up various event listeners
      */
     setUpEventListeners: function () {
-        this.listenTo(events, 'datalasso:hud:update', this.update);
+        this.listenTo(store, 'change:focused', this.update);
         this.listenTo(events, 'datalasso:mouse:move', this.reposition);
-        this.listenTo(events, 'datalasso:axismappings:updated', this.onNewMappings);
+        this.listenTo(store, 'change:mappings', this.onNewMappings);
     },
 
     /**
@@ -46,7 +47,8 @@ var HudView = Backbone.View.extend({
     /**
      * Something is hovered over so display must be enabled
      */
-    update: function (entry) {
+    update: function () {
+        var entry = store.get('focused');
         this.$el.html(template({
             entry: entry,
             attributesInUse: this.attributesInUse
@@ -57,11 +59,11 @@ var HudView = Backbone.View.extend({
      * When new axis mappings are selected, we store
      * which attributes were selected to only use them
      */
-    onNewMappings: function (e) {
-        var mappings = e.mappings;
+    onNewMappings: function (store) {
+        var mappings = store.get('mappings');
 
         this.attributesInUse = _.map(mappings, function (axis) {
-            return axis.attribute;
+            return axis;
         }) || [];
     },
 

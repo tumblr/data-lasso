@@ -5,6 +5,8 @@ var d3 = require('d3');
 var Backbone = require('backbone');
 var events = require('../lib/events');
 var template = require('../templates/uploader.tpl');
+var store = require('../store');
+var dispatcher = require('../dispatcher');
 
 /**
  * ## Upload Form View
@@ -53,24 +55,23 @@ var UploaderView = Backbone.View.extend({
      * into an object and passes it further down the flow
      */
     readerOnload: function (e) {
-        var data;
+        var entries;
 
         switch (this.getSelectedType()) {
             case 'csv':
-                data = d3.csv.parse(e.target.result);
+                entries = d3.csv.parse(e.target.result);
                 break;
             case 'tsv':
-                data = d3.tsv.parse(e.target.result);
+                entries = d3.tsv.parse(e.target.result);
                 break;
             case 'json':
-                data = JSON.parse(e.target.result);
+                entries = JSON.parse(e.target.result);
                 break;
         }
 
-        // Triggers data processing on the data model
-        events.trigger('datalasso:data:uploaded', {data: data});
+        dispatcher.dispatch({actionType: 'file-uploaded', entries: entries});
 
-        this.listenToOnce(events, 'datalasso:input:processed', this.toggleLoadingIndicator());
+        this.listenToOnce(store, 'change:entries', this.toggleLoadingIndicator());
     },
 
     toggleLoadingIndicator: function () {

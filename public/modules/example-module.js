@@ -25,18 +25,23 @@
  * Attributes can be simple objects, the only requirement is for
  * a module to have `initialize` method (following Backbone View
  * convention). That `initialize `method will be called on Data
- * Lasso initialization with has consisting of two attributes:
+ * Lasso initialization with hash consisting of these attributes:
  *
- *  - `dlEvents` { Backbone.Events instance }
- *
+ * - events { Backbone.Events instance }
  *   Event bus of Data Lasso. Data lasso heavily uses events,
  *   so utilizing event bus can give you large controls of data
  *   lasso's internal workings
  *
- * - `$container` { jQuery object }
- *
+ * - $container { jQuery object }
  *   Data Lasso container element. If your module has an interface,
  *   this is the element to append to.
+ *
+ * - store { Backbone.Model instance }
+ *   Data Lasso store, containing current state. For a complete list
+ *   of state attributes, refer to `/src/store/initialState.js`
+ *
+ * - dispatcher { Flux.Dispatcher instance }
+ *   Action dispatcher of Data Lasso
  *
  */
 
@@ -48,9 +53,11 @@ var ExampleModule = Backbone.View.extend({
 
     initialize: function (options) {
         this.dlEvents = options.events;
+        this.dlStore = options.store;
+        this.dlDispatcher = options.dispatcher;
         this.$container = options.$container;
 
-        this.listenTo(this.dlEvents, 'datalasso:input:processed', this._onNewInput);
+        this.listenTo(this.dlStore, 'change:attributes', this._onNewInput);
 
         this.$el.css({
             'position': 'absolute',
@@ -62,8 +69,8 @@ var ExampleModule = Backbone.View.extend({
         this.render();
     },
 
-    _onNewInput: function (e) {
-        this.render(_.get(e, 'data.attributes'));
+    _onNewInput: function () {
+        this.render(this.dlStore.get('attributes'));
     },
 
     render: function (attributes) {
