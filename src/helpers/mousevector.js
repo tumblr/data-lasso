@@ -44,7 +44,7 @@ var MouseHelper =  Class.extend({
         e.preventDefault();
 
         this.vector.x = (e.offsetX / window.innerWidth) * 2 - 1;
-        this.vector.y = -((e.offsetY / window.innerHeight) * 2 + 1);
+        this.vector.y = -(e.offsetY / window.innerHeight) * 2 + 1;
 
         events.trigger('datalasso:mouse:move', {
             vector: this.vector,
