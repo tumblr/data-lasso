@@ -5,10 +5,9 @@ var Backbone = require('backbone');
 var THREE = require('three');
 var OrbitControls = require('three-orbit-controls')(THREE);
 var helvetiker = require('three.regular.helvetiker');
-var events = require('../lib/events');
 var SelectionHelper = require('../helpers/selection');
 var axisGeometry = require('../geometry/axis');
-var mouseVectorHelper = require('../helpers/mousevector');
+var Mouse = require('../helpers/mouse');
 var shaders = require('../templates/shaders.tpl');
 var textures = require('../helpers/texture');
 var store = require('../store');
@@ -57,7 +56,7 @@ var GraphView = Backbone.View.extend({
         this.camera.position.set(this.options.graphSize * 2, this.options.graphSize * 2, this.options.graphSize * 2);
 
         // Mouse vector
-        this.mouse = mouseVectorHelper(this.$el);
+        this.mouse = new Mouse(this.$el);
 
         // Renderer
         this.renderer = new THREE.WebGLRenderer({alpha: true});
@@ -105,7 +104,7 @@ var GraphView = Backbone.View.extend({
         this.raycaster.params.PointCloud.threshold = 1;
 
         // Selection
-        this.selectionHelper = new SelectionHelper(this.scene, this.camera);
+        this.selectionHelper = new SelectionHelper(this.scene, this.camera, this.mouse);
 
         // Kick off the render loop
         this.animate();
@@ -148,7 +147,7 @@ var GraphView = Backbone.View.extend({
 
     onControlsUpdate: function () {
         this.renderFrame();
-        events.trigger('datalasso:camera:moved');
+        this.selectionHelper.updateProjectionPlane();
     },
 
     onWindowResize: function () {

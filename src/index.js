@@ -3,7 +3,6 @@
 var _ = require('lodash');
 var Backbone = require('backbone');
 
-var events = require('./lib/events');
 var styles = require('./styles/index.scss');
 var dispatcher = require('./dispatcher');
 var defaults = require('./helpers/optionDefaults');
@@ -62,7 +61,6 @@ var DataLassoView = Backbone.View.extend({
 
         _.forEach(modules, function (module, name) {
             this.modules[name] = new module.constructor({
-                events: events,
                 store: store,
                 dispatcher: dispatcher,
                 $container: this.$el,

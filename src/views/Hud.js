@@ -2,7 +2,6 @@
 
 var _ = require('lodash');
 var Backbone = require('backbone');
-var events = require('../lib/events');
 var template = require('../templates/hud.tpl');
 var store = require('../store');
 
@@ -30,12 +29,15 @@ var HudView = Backbone.View.extend({
      */
     setUpEventListeners: function () {
         this.listenTo(store, 'change:focused', this.update);
-        this.listenTo(events, 'datalasso:mouse:move', this.reposition);
         this.listenTo(store, 'change:mappings', this.onNewMappings);
+
+        document.addEventListener('mousemove', _.bind(this.reposition, this));
     },
 
     /**
      * Just straight up position the element on the screen
+     *
+     * @param e - DOM event
      */
     reposition: function (e) {
         this.$el.css({

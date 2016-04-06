@@ -2,7 +2,6 @@
 
 var _ = require('lodash');
 var THREE = require('three');
-var events = require('../lib/events');
 var Class = require('../lib/class');
 var store = require('../store');
 var dispatcher = require('../dispatcher');
@@ -40,14 +39,14 @@ var lassoPoints = 4;
 
 var SelectionHelper = Class.extend({
 
-    initialize: function (scene, camera) {
+    initialize: function (scene, camera, mouse) {
         this.camera = camera;
         this.scene = scene;
+        this.mouse = mouse;
         this.selectionMode = false;
 
-        events.on('datalasso:mouse:move', _.bind(this.onMouseMove, this));
-        events.on('datalasso:mouse:down', _.bind(this.onMouseDown, this));
-        events.on('datalasso:camera:moved', _.bind(this.updateProjectionPlane, this));
+        this.mouse.on('datalasso:mouse:move', _.bind(this.onMouseMove, this));
+        this.mouse.on('datalasso:mouse:down', _.bind(this.onMouseDown, this));
 
         store.on('change:entries', _.bind(this.onEntriesChange, this));
 

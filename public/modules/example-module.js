@@ -27,11 +27,6 @@
  * convention). That `initialize `method will be called on Data
  * Lasso initialization with hash consisting of these attributes:
  *
- * - events { Backbone.Events instance }
- *   Event bus of Data Lasso. Data lasso heavily uses events,
- *   so utilizing event bus can give you large controls of data
- *   lasso's internal workings
- *
  * - $container { jQuery object }
  *   Data Lasso container element. If your module has an interface,
  *   this is the element to append to.
@@ -52,7 +47,6 @@ var ExampleModule = Backbone.View.extend({
     template: _.template("Data attributes count: <%= (_.keys(attributes)).length %>"),
 
     initialize: function (options) {
-        this.dlEvents = options.events;
         this.dlStore = options.store;
         this.dlDispatcher = options.dispatcher;
         this.$container = options.$container;
