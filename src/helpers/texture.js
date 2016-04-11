@@ -25,5 +25,5 @@ var dotTexture = function () {
 };
 
 module.exports = {
-    dotTexture: dotTexture
+    dotTexture: dotTexture,
 };

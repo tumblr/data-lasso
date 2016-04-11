@@ -2,7 +2,6 @@
 
 var _ = require('lodash');
 var Backbone = require('backbone');
-var events = require('../lib/events');
 var template = require('../templates/axis-controls.tpl');
 var store = require('../store');
 var dispatcher = require('../dispatcher');
@@ -46,7 +45,7 @@ var AxisControls = Backbone.View.extend({
         var mappings = _.clone(this.mappings);
 
         _.each(this.mappings, function (mapping, axis) {
-            var selectValue = this.$('.axis-selector[name="'+axis+'"]').val();
+            var selectValue = this.$('.axis-selector[name="' + axis + '"]').val();
             mappings[axis] = selectValue ? selectValue : null;
         }, this);
 
@@ -56,7 +55,7 @@ var AxisControls = Backbone.View.extend({
     render: function () {
         this.$el.html(template({
             mappings: this.mappings,
-            attributes: this.attributes
+            attributes: this.attributes,
         }));
 
         return this;

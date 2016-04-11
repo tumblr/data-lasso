@@ -2,7 +2,6 @@
 
 var _ = require('lodash');
 var THREE = require('three');
-var events = require('../lib/events');
 var Class = require('../lib/class');
 var store = require('../store');
 var dispatcher = require('../dispatcher');
@@ -40,18 +39,18 @@ var lassoPoints = 4;
 
 var SelectionHelper = Class.extend({
 
-    initialize: function (scene, camera) {
+    initialize: function (scene, camera, mouse) {
         this.camera = camera;
         this.scene = scene;
+        this.mouse = mouse;
         this.selectionMode = false;
 
-        events.on('datalasso:mouse:move', _.bind(this.onMouseMove, this));
-        events.on('datalasso:mouse:down', _.bind(this.onMouseDown, this));
-        events.on('datalasso:camera:moved', _.bind(this.updateProjectionPlane, this));
+        this.mouse.on('datalasso:mouse:move', _.bind(this.onMouseMove, this));
+        this.mouse.on('datalasso:mouse:down', _.bind(this.onMouseDown, this));
 
         store.on('change:entries', _.bind(this.onEntriesChange, this));
 
-        document.addEventListener('keyup', _.bind(this.onDocumentKeyUp, this), false );
+        document.addEventListener('keyup', _.bind(this.onDocumentKeyUp, this), false);
     },
 
     onEntriesChange: function () {
@@ -71,7 +70,7 @@ var SelectionHelper = Class.extend({
             this.scene.add(this.projectionPlane);
         }
 
-        var vector = new THREE.Vector3(0, 0 ,-1);
+        var vector = new THREE.Vector3(0, 0, -1);
 
         vector.applyQuaternion(this.camera.quaternion);
         vector.multiplyScalar(planeDistanceFromCamera);
@@ -208,7 +207,6 @@ var SelectionHelper = Class.extend({
 
         return new THREE.Line(geometry, material);
     },
-
 
 
     /**
@@ -369,7 +367,7 @@ var SelectionHelper = Class.extend({
      * point is 'inside' the plane (on the back side of the plane)
      */
     isPointInsideFrustum: function (point, frustum) {
-        for (var i=0; i < frustum.length; i++) {
+        for (var i = 0; i < frustum.length; i++) {
             var distance = frustum[i].distanceToPoint(point);
 
             if (distance > 0) {
@@ -377,7 +375,7 @@ var SelectionHelper = Class.extend({
             }
         }
         return true;
-    }
+    },
 });
 
 module.exports = SelectionHelper;

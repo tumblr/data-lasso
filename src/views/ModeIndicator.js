@@ -1,7 +1,6 @@
 'use strict';
 
 var Backbone = require('backbone');
-var events = require('../lib/events');
 var template = require('../templates/mode-indicator.tpl');
 var store = require('../store');
 
@@ -33,11 +32,11 @@ var ModeIndicator = Backbone.View.extend({
         mode || (mode = 'normal');
 
         this.$el.html(template({
-            mode: mode
+            mode: mode,
         }));
 
         return this;
-    }
+    },
 });
 
 module.exports = ModeIndicator;

@@ -17,7 +17,7 @@ var Class = function () {
 Class.extend = Backbone.Model.extend;
 
 _.extend(Class, {
-    initialize: function () {}
+    initialize: function () {},
 });
 
 module.exports = Class;

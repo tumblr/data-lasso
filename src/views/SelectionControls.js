@@ -1,7 +1,7 @@
 'use strict';
 
+var _ = require('lodash');
 var Backbone = require('backbone');
-var events = require('../lib/events');
 var template = require('../templates/selection-controls.tpl');
 var store = require('../store');
 var dispatcher = require('../dispatcher');
@@ -21,7 +21,7 @@ var SelectionControls = Backbone.View.extend({
     events: {
         'click [data-action="zoom-into-selection"]': 'zoomIntoSelection',
         'click [data-action="zoom-outof-selection"]': 'zoomOutOfSelection',
-        'click [data-action="download-selected"]': 'downloadSelected'
+        'click [data-action="download-selected"]': 'downloadSelected',
     },
 
     initialize: function () {
@@ -81,7 +81,7 @@ var SelectionControls = Backbone.View.extend({
         }));
 
         return this;
-    }
+    },
 });
 
 module.exports = SelectionControls;
