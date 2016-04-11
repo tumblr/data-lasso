@@ -1,23 +1,24 @@
 'use strict';
 
 var _ = require('lodash');
+var Events = require('backbone').Events;
 var THREE = require('three');
-var events = require('../lib/events');
 var Class = require('../lib/class');
 
 /**
  * ## Mouse Helper
  *
- * Provides several helper functions that make
- * working with mouse position vector easier throughout
- * the data lasso
+ * Provides an interface that makes working with mouse position
+ * easier by translating DOM mouse position to a THREE vector
  *
  * @param $container - container that renderer uses
  */
 
-var MouseHelper =  Class.extend({
+var Mouse = Class.extend({
 
     initialize: function ($container) {
+        _.extend(this, Events);
+
         this.$container = $container;
         this.vector = new THREE.Vector2();
 
@@ -31,7 +32,7 @@ var MouseHelper =  Class.extend({
     /**
      * Get position vector of the mouse
      *
-     * @returns {THREE.Vector2|*}
+     * @returns {THREE.Vector2} - three.js vector for mouse cursor position
      */
     position: function () {
         return this.vector;
@@ -39,14 +40,14 @@ var MouseHelper =  Class.extend({
 
     /**
      * Event listener for `mousemove`
+     *
+     * @param e - DOM event
      */
     onMouseMove: function (e) {
-        e.preventDefault();
-
         this.vector.x = (e.offsetX / window.innerWidth) * 2 - 1;
         this.vector.y = -(e.offsetY / window.innerHeight) * 2 + 1;
 
-        events.trigger('datalasso:mouse:move', {
+        this.trigger('datalasso:mouse:move', {
             vector: this.vector,
             x: e.offsetX,
             y: e.offsetY,
@@ -54,26 +55,16 @@ var MouseHelper =  Class.extend({
     },
 
     /**
-     * * Event listener for `mousedown`
+     * Event listener for `mousedown`
+     *
+     * @param e - DOM event
      */
     onMouseDown: function (e) {
-        events.trigger('datalasso:mouse:down', {
+        this.trigger('datalasso:mouse:down', {
             button: e.button,
             vector: this.vector,
         });
     },
 });
 
-
-/**
- * Singleton-like behavior
- */
-var _instance;
-
-module.exports = function ($container) {
-    if (!_instance) {
-        _instance = new MouseHelper($container);
-    }
-
-    return _instance;
-};
+module.exports = Mouse;
