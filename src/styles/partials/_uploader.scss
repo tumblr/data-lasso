@@ -6,54 +6,90 @@
     padding: 10px;
     z-index: 1;
 
-    .toggles {
-        margin: 5px 0;
-        display: flex;
-        justify-content: center;
-    }
-
     .toggle {
-        flex: 1 0 auto;
-
-        .filetype-label {
-            text-align: center;
-            display: block;
-            cursor: pointer;
-            width: 100%;
-            font-weight: bold;
-            background: $dl-background-subtle;
-            color: #ddd;
-        }
-
-        input:checked + .filetype-label {
-            background: $dl-background-heavy;
-            color: #FFF;
-        }
-
-        input {
-            display: none;
-        }
-    }
-
-    .file-upload {
+        text-align: center;
+        display: block;
+        cursor: pointer;
         width: 100%;
-        padding: 4px 0;
-        height: auto;
-        line-height: 1;
-        color: $dl-color-text;
+        font-weight: bold;
         background: $dl-background-subtle;
+        color: $dl-color-text;
+        border: 0;
+        font-size: inherit;
     }
 
-    .upload-button {
+    .toggle.active {
+        background: $dl-background-heavy;
+        color: #ffffff;
+    }
+
+    .file-upload-input {
+        width: 100%;
+        color: $dl-color-text;
+        padding: 7px 0;
+    }
+
+    .url-input:focus {
+        width: 200%;
+    }
+
+    .button {
         .loading-state {
             display: none;
         }
     }
 
-    &.loading {
-        .upload-button {
-            pointer-events: none;
+    &[data-source='file'] {
+        .file-upload-form {
+            display: block;
+        }
 
+        .url-form {
+            display: none;
+        }
+
+        .toggle-file {
+            @extend .active;
+        }
+    }
+
+    &[data-source='url'] {
+        .file-upload-form {
+            display: none;
+        }
+
+        .url-form {
+            display: block;
+        }
+
+        .toggle-url {
+            @extend .active;
+        }
+    }
+
+    &[data-file-type='csv'] {
+        .toggle-csv {
+            @extend .active;
+        }
+    }
+
+    &[data-file-type='tsv'] {
+        .toggle-tsv {
+            @extend .active;
+        }
+    }
+
+    &[data-file-type='json'] {
+        .toggle-json {
+            @extend .active;
+        }
+    }
+
+    &.loading {
+        opacity: 0.5;
+        pointer-events: none;
+
+        .button {
             .loading-state {
                 display: block;
             }
@@ -61,6 +97,12 @@
             .ready-state {
                 display: none;
             }
+        }
+    }
+
+    &.error {
+        .button {
+            animation: shake 0.6s;
         }
     }
 }

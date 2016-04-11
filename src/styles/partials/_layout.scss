@@ -8,6 +8,23 @@
     margin: 0;
     font-size: 13px;
     line-height: 1.4;
+    color: $dl-color-text;
+    font-weight: bold;
+
+    .row {
+        width: 100%;
+        margin: 5px 0;
+        display: flex;
+        justify-content: center;
+
+        &.extra-spacing {
+            margin-bottom: 10px;
+        }
+    }
+
+    .column {
+        flex: 1 0 auto;
+    }
 
     .button {
         width: 100%;
@@ -27,5 +44,14 @@
             background-color: $dl-background-subtle;
             color: $dl-color-text;
         }
+    }
+
+    .text-input {
+        box-sizing: border-box;
+        width: 100%;
+        color: $dl-color-text;
+        border: 0;
+        padding: 10px;
+        background: $dl-background-subtle;
     }
 }
