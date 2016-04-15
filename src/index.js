@@ -79,6 +79,7 @@ var DataLassoView = Backbone.View.extend({
                     <Uploader/>
                     <AxisControls/>
                     <Hud/>
+                    <ModeIndicator/>
                 </div>
             )
         }
@@ -87,11 +88,6 @@ var DataLassoView = Backbone.View.extend({
 
         this.graph = new Graph(this.options);
         this.$el.append(this.graph.el);
-
-
-        // Mode indicator
-        this.modeIndicator = new ModeIndicator();
-        this.$el.append(this.modeIndicator.render().el);
 
         // Selection controls
         this.selectionControls = new SelectionControls();
