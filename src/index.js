@@ -78,19 +78,16 @@ var DataLassoView = Backbone.View.extend({
                 <div>
                     <Uploader/>
                     <AxisControls/>
+                    <Hud/>
                 </div>
             )
         }
 
         ReactDom.render(<App/>, this.el);
 
-        // Axis Controls
         this.graph = new Graph(this.options);
         this.$el.append(this.graph.el);
 
-        // HUD
-        this.hud = new Hud();
-        this.$el.append(this.hud.render().el);
 
         // Mode indicator
         this.modeIndicator = new ModeIndicator();

@@ -1,9 +1,8 @@
 'use strict';
 
 var _ = require('lodash');
-var Backbone = require('backbone');
-var template = require('../templates/hud.tpl');
 var store = require('../store');
+var React = require('react');
 
 /**
  * ## Heads Up Display View
@@ -16,22 +15,35 @@ var store = require('../store');
 // Margin from HUD element to selected entry
 var margin = 20;
 
-var HudView = Backbone.View.extend({
-
-    className: 'hud-container',
-
-    initialize: function () {
-        this.setUpEventListeners();
+var Hud = React.createClass({
+    getInitialState: function() {
+        return {
+            focused: store.get('focused'),
+            mappings: store.get('mappings'),
+            attributesInUse: [],
+            top: 0,
+            left: 0,
+        }
     },
 
-    /**
-     * Set up various event listeners
-     */
-    setUpEventListeners: function () {
-        this.listenTo(store, 'change:focused', this.update);
-        this.listenTo(store, 'change:mappings', this.onNewMappings);
+    componentDidMount: function() {
+        store.on('change:focused', this.onFocusedChange);
+        store.on('change:mappings', this.onMappingsChange);
 
-        document.addEventListener('mousemove', _.bind(this.reposition, this));
+        document.addEventListener('mousemove', _.throttle(_.bind(this.reposition, this), 50));
+    },
+
+    onFocusedChange: function() {
+        this.setState({
+            focused: store.get('focused'),
+        })
+    },
+
+    onMappingsChange: function() {
+        let attributesInUse = _.filter(_.map(store.get('mappings'), (axis) => axis));
+        this.setState({
+            attributesInUse: attributesInUse || []
+        });
     },
 
     /**
@@ -40,38 +52,40 @@ var HudView = Backbone.View.extend({
      * @param e - DOM event
      */
     reposition: function (e) {
-        this.$el.css({
+        this.setState({
             top: e.y + margin,
             left: e.x + margin,
         });
     },
 
-    /**
-     * Something is hovered over so display must be enabled
-     */
-    update: function () {
-        var entry = store.get('focused');
-        this.$el.html(template({
-            entry: entry,
-            attributesInUse: this.attributesInUse,
-        }));
-    },
-
-    /**
-     * When new axis mappings are selected, we store
-     * which attributes were selected to only use them
-     */
-    onNewMappings: function () {
-        var mappings = store.get('mappings');
-
-        this.attributesInUse = _.map(mappings, function (axis) {
-            return axis;
-        }) || [];
-    },
-
-    render: function () {
-        return this;
-    },
+    render: function() {
+        if (this.state.focused && this.state.attributesInUse.length) {
+            let attributes = _.map(this.state.attributesInUse, (attribute) => {
+                return {
+                    name: attribute,
+                    value: this.state.focused[attribute],
+                }
+            });
+            let style = {
+                top: this.state.top,
+                left: this.state.left,
+            };
+            return (
+                <div className="hud-container" style={style}>
+                    {_.map(attributes, (attribute) => {
+                        return (
+                            <div className='attribute'>
+                                <label className="attribute-name">{attribute.name}</label>
+                                <span className="attribute-value">{attribute.value}</span>
+                            </div>
+                        )
+                    })}
+                </div>
+            )
+        } else {
+            return null;
+        }
+    }
 });
 
-module.exports = HudView;
+module.exports = Hud;
