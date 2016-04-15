@@ -63,7 +63,8 @@ function scripts (watch, dest) {
     }
 
     var b = browserify(options);
-    b.transform('jstify', { engine: 'lodash' })
+    b.transform('jstify', {engine: 'lodash'});
+    b.transform('reactify', {es6: true});
     b.transform(sassr);
 
     bundle = function () {
