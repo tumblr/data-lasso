@@ -1,10 +1,9 @@
 'use strict';
 
 var _ = require('lodash');
-var Backbone = require('backbone');
-var template = require('../templates/selection-controls.tpl');
 var store = require('../store');
 var dispatcher = require('../dispatcher');
+var React = require('react');
 
 /**
  * ## Selection View
@@ -14,53 +13,79 @@ var dispatcher = require('../dispatcher');
  *
  */
 
-var SelectionControls = Backbone.View.extend({
-
-    className: 'selection-controls',
-
-    events: {
-        'click [data-action="zoom-into-selection"]': 'zoomIntoSelection',
-        'click [data-action="zoom-outof-selection"]': 'zoomOutOfSelection',
-        'click [data-action="download-selected"]': 'downloadSelected',
+var SelectionControls = React.createClass({
+    getInitialState: function() {
+        return {
+            entriesTotal: store.get('entries').length,
+            selectedEntriesTotal: _.filter(store.get('entries'), 'isSelected').length,
+            snapshotCount: store.get('snapshots').length,
+        }
     },
 
-    initialize: function () {
-        this.selectedEntries = [];
-
-        this.setupEventListeners();
+    componentDidMount: function() {
+        store.on('change:selectedEntries', this.onUpdate);
+        store.on('change:snapshots', this.onUpdate);
     },
 
-    setupEventListeners: function () {
-        this.listenTo(store, 'change:selectedEntries', this.onUpdate);
-        this.listenTo(store, 'change:snapshots', this.onUpdate);
+    onUpdate: function() {
+        this.setState({
+            entriesTotal: store.get('entries').length,
+            selectedEntriesTotal: _.filter(store.get('entries'), 'isSelected').length,
+            snapshotCount: store.get('snapshots').length,
+        });
     },
 
-    onUpdate: function () {
-        var entriesTotal = store.get('entries').length;
-        var selectedEntriesTotal = _.filter(store.get('entries'), 'isSelected').length;
-        var snapshotCount = store.get('snapshots').length;
-
-        this.render(entriesTotal, selectedEntriesTotal, snapshotCount);
-    },
-
-    /**
-     * ## Zoom INTO Selection
-     */
-    zoomIntoSelection: function () {
-        dispatcher.dispatch({actionType: 'zoom-in'});
-    },
-
-    /**
-     * ## Zoom OUT OF Selection
-     */
-    zoomOutOfSelection: function () {
+    zoomOutHandler: function() {
         dispatcher.dispatch({actionType: 'zoom-out'});
     },
 
-    /**
-     * Generate CSV and trigger download
-     */
-    downloadSelected: function () {
+    zoomInHandler: function() {
+        dispatcher.dispatch({actionType: 'zoom-in'});
+    },
+
+    render: function() {
+        if (this.state.selectedEntriesTotal || this.state.snapshotCount) {
+            return (
+                <div className="selection-controls">
+                    <div className="selected-indicator">
+                        <div className="total">
+                            <div className="count-label">Total</div>
+                            <div className="count">{this.state.entriesTotal}</div>
+                        </div>
+                        <div className="selected">
+                            <div className="count-label">Selected</div>
+                            <div className="count">{this.state.selectedEntriesTotal}</div>
+                        </div>
+                    </div>
+
+                    <div className="buttons-container">
+                        <Button onClick={this.zoomOutHandler} className="back" isActive={this.state.snapshotCount > 0}>◀</Button>
+                        <Button onClick={this.zoomInHandler} className="zoom" isActive={this.state.selectedEntriesTotal}>Zoom in</Button>
+                    </div>
+
+
+                    <DownloadButton isActive={this.state.selectedEntriesTotal}>Download selected as csv</DownloadButton>
+                </div>
+            )
+        } else {
+            return null;
+        }
+    },
+});
+
+var Button = React.createClass({
+    render: function() {
+        let classList = ['button', 'black'];
+        this.props.className && classList.push(this.props.className);
+        classList.push(this.props.isActive ? 'active' : 'disabled');
+        return (
+            <button onClick={this.props.onClick} className={classList.join(' ')}>{this.props.children}</button>
+        )
+    }
+});
+
+var DownloadButton = React.createClass({
+    downloadSelected: function() {
         var csvContent = 'data:text/csv;charset=utf-8,';
         csvContent += _.keys(store.get('attributes')).join(',');
 
@@ -73,15 +98,17 @@ var SelectionControls = Backbone.View.extend({
         window.open(encodeURI(csvContent));
     },
 
-    render: function (entriesTotal, selectedEntriesTotal, snapshotCount) {
-        this.$el.html(template({
-            selectedEntriesTotal: selectedEntriesTotal || 0,
-            snapshotCount: snapshotCount || 0,
-            entriesTotal: entriesTotal || 0,
-        }));
-
-        return this;
-    },
+    render: function() {
+        if (this.props.isActive) {
+            return (
+                <div onClick={this.downloadSelected} className="download-link">
+                    {this.props.children}
+                </div>
+            )
+        } else {
+            return null;
+        }
+    }
 });
 
 module.exports = SelectionControls;
