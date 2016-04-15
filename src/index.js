@@ -2,6 +2,8 @@
 
 var _ = require('lodash');
 var Backbone = require('backbone');
+var React = require('react');
+var ReactDom = require('react-dom');
 
 var styles = require('./styles/index.scss');
 var dispatcher = require('./dispatcher');
@@ -71,9 +73,7 @@ var DataLassoView = Backbone.View.extend({
     render: function () {
         styles.append();
 
-        // Uploader
-        this.uploader = new Uploader();
-        this.$el.append(this.uploader.render().el);
+        ReactDom.render(<Uploader/>, this.el);
 
         // Axis Controls
         this.axisControls = new AxisControls(this.options);

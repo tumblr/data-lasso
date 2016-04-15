@@ -54,4 +54,8 @@ module.exports = {
         z: null,
         color: null,
     },
+
+    source: 'file',
+
+    type: 'csv',
 };

@@ -73,6 +73,14 @@ var DataModel = Model.extend({
             case 'zoom-out':
                 this.onZoomOut();
                 break;
+
+            case 'source-change':
+                this.onSourceChange(action);
+                break;
+
+            case 'type-change':
+                this.onTypeChange(action);
+                break;
         }
     },
 
@@ -179,6 +187,24 @@ var DataModel = Model.extend({
      */
     onZoomOut: function () {
         this.restoreLastDataSnapshot();
+    },
+
+    onSourceChange: function (action) {
+        if (!action.source) {
+            throw new Error('Source is not set');
+        }
+        this.set({
+            source: action.source
+        });
+    },
+
+    onTypeChange: function (action) {
+        if (!action.type) {
+            throw new Error('Type is not set');
+        }
+        this.set({
+            type: action.type
+        });
     },
 
     /**
