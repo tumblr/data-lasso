@@ -73,11 +73,16 @@ var DataLassoView = Backbone.View.extend({
     render: function () {
         styles.append();
 
-        ReactDom.render(<Uploader/>, this.el);
+        let App = () => {
+            return (
+                <div>
+                    <Uploader/>
+                    <AxisControls/>
+                </div>
+            )
+        }
 
-        // Axis Controls
-        this.axisControls = new AxisControls(this.options);
-        this.$el.append(this.axisControls.render().el);
+        ReactDom.render(<App/>, this.el);
 
         // Axis Controls
         this.graph = new Graph(this.options);
