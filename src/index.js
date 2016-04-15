@@ -1,7 +1,6 @@
 'use strict';
 
 var _ = require('lodash');
-var Backbone = require('backbone');
 var React = require('react');
 var ReactDom = require('react-dom');
 
@@ -24,24 +23,42 @@ var SelectionControls = require('./views/SelectionControls');
  * initializing sub views and modules, if any
  */
 
-var DataLassoView = Backbone.View.extend({
+var DataLassoUI = React.createClass({
+    render: function() {
+        return (
+            <div>
+                <Uploader/>
+                <AxisControls/>
+                <Hud/>
+                <ModeIndicator/>
+                <SelectionControls/>
+            </div>
+        )
+    }
+});
 
-    className: 'datalasso-container',
-
-    defaults: defaults,
-
-    initialize: function (options) {
+var DataLasso = class DataLasso {
+    constructor (options) {
         this.modules = options.modules;
-        this.options = _.defaults({}, _.omit(options, 'modules'), this.defaults);
+        this.options = _.defaults(defaults, _.omit(options, 'modules'), this.defaults);
 
         dispatcher.dispatch({actionType: 'options-set', options: this.options});
+
+        this.createElement();
 
         if (this.modules) {
             this.initializeModules(this.modules);
         }
 
         this.render();
-    },
+    }
+
+    createElement () {
+        this.$el = $('<div></div>', {
+            class: 'datalasso-container'
+        });
+        this.el = this.$el[0];
+    }
 
     /**
      * Initialize modules that can be plugged into
@@ -58,7 +75,7 @@ var DataLassoView = Backbone.View.extend({
      *
      * @param {array} modules: Data Lasso modules to use
      */
-    initializeModules: function (modules) {
+    initializeModules (modules) {
         this.modules = {};
 
         _.forEach(modules, function (module, name) {
@@ -68,32 +85,17 @@ var DataLassoView = Backbone.View.extend({
                 $container: this.$el,
             });
         }, this);
-    },
+    }
 
-    render: function () {
+    render () {
         styles.append();
-
-        let App = () => {
-            return (
-                <div>
-                    <Uploader/>
-                    <AxisControls/>
-                    <Hud/>
-                    <ModeIndicator/>
-                    <SelectionControls/>
-                </div>
-            )
-        }
-
-        ReactDom.render(<App/>, this.el);
-
+        ReactDom.render(<DataLassoUI/>, this.el);
         this.graph = new Graph(this.options);
         this.$el.append(this.graph.el);
+        return this.el;
+    }
+};
 
-        return this;
-    },
-});
-
-module.exports = DataLassoView;
+module.exports = DataLasso;
 
 window.DataLasso = module.exports;
