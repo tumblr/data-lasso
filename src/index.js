@@ -86,7 +86,7 @@ var DataLassoView = Backbone.View.extend({
 
         // Axis Controls
         this.graph = new Graph(this.options);
-        this.$el.append(this.graph.render().el);
+        this.$el.append(this.graph.el);
 
         // HUD
         this.hud = new Hud();
