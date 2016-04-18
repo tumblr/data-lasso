@@ -14,13 +14,17 @@ var dispatcher = require('../dispatcher');
 
 
 /**
- * ## Graph View
+ * ## Graph
  *
- * The view that handles rendering Data Lasso. That includes:
+ * Handles rendering of Data Lasso. That includes:
  * - Scene, camera, lights
  * - Raycasting and collision detection
  * - Rendering
  *
+ * When initiated, that class sets up three.js, creates an element to which
+ * three.js will render to and returns instance of the class
+ *
+ * @TODO: Move all of the graph stuff into it's own place
  */
 
 let graphOptions = {

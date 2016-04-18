@@ -4,13 +4,10 @@ var React = require('react');
 var store = require('../store');
 
 /**
- * ## Mode Indicator View
+ * ## Mode Indicator Component
  *
- * Handles visual feedback when mode is changed
- * between normal mode and selection mode.
- *
+ * Handles visual feedback when mode is changed between normal mode and selection mode.
  */
-
 var ModeIndicator = React.createClass({
     getInitialState: function() {
         return {
@@ -26,6 +23,11 @@ var ModeIndicator = React.createClass({
         });
     },
 
+    /**
+     * Contains text that should be displayed for each mode
+     * @param {string} mode for which to get copy
+     * @returns {object} hash of copy containing header and a hint
+     */
     getCopyForMode: function(mode) {
         switch (mode) {
             case 'normal':

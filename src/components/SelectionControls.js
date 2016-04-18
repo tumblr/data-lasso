@@ -6,13 +6,10 @@ var dispatcher = require('../dispatcher');
 var React = require('react');
 
 /**
- * ## Selection View
+ * ## Selection UI Component
  *
- * Displays information on currently selected entries
- * and zooming in and out of a dataset
- *
+ * Displays information on currently selected entries and zooming in and out of a dataset
  */
-
 var SelectionControls = React.createClass({
     getInitialState: function() {
         return {
@@ -23,11 +20,14 @@ var SelectionControls = React.createClass({
     },
 
     componentDidMount: function() {
-        store.on('change:selectedEntries', this.onUpdate);
-        store.on('change:snapshots', this.onUpdate);
+        store.on('change:selectedEntries', this.handleDataUpdate);
+        store.on('change:snapshots', this.handleDataUpdate);
     },
 
-    onUpdate: function() {
+    /**
+     * Update internal state when selection or snapshots change
+     */
+    handleDataUpdate: function() {
         this.setState({
             entriesTotal: store.get('entries').length,
             selectedEntriesTotal: _.filter(store.get('entries'), 'isSelected').length,
@@ -35,14 +35,17 @@ var SelectionControls = React.createClass({
         });
     },
 
-    zoomOutHandler: function() {
+    handleZoomOutClick: function() {
         dispatcher.dispatch({actionType: 'zoom-out'});
     },
 
-    zoomInHandler: function() {
+    handleZoomInClick: function() {
         dispatcher.dispatch({actionType: 'zoom-in'});
     },
 
+    /**
+     * Renders the selection UI if something is selected, or zooming was performed earlier
+     */
     render: function() {
         if (this.state.selectedEntriesTotal || this.state.snapshotCount) {
             return (
@@ -59,8 +62,8 @@ var SelectionControls = React.createClass({
                     </div>
 
                     <div className="buttons-container">
-                        <Button onClick={this.zoomOutHandler} className="back" isActive={this.state.snapshotCount > 0}>◀</Button>
-                        <Button onClick={this.zoomInHandler} className="zoom" isActive={this.state.selectedEntriesTotal}>Zoom in</Button>
+                        <ZoomControlButton onClick={this.handleZoomOutClick} className="back" isActive={this.state.snapshotCount > 0}>◀</ZoomControlButton>
+                        <ZoomControlButton onClick={this.handleZoomInClick} className="zoom" isActive={this.state.selectedEntriesTotal > 0}>Zoom in</ZoomControlButton>
                     </div>
 
 
@@ -73,7 +76,17 @@ var SelectionControls = React.createClass({
     },
 });
 
-var Button = React.createClass({
+/**
+ * ## Zoom Control button helper React component
+ *
+ * Buttons that control zoom
+ */
+var ZoomControlButton = React.createClass({
+    propTypes: {
+        onClick: React.PropTypes.func,
+        isActive: React.PropTypes.bool,
+    },
+
     render: function() {
         let classList = ['button', 'black'];
         this.props.className && classList.push(this.props.className);
@@ -84,6 +97,12 @@ var Button = React.createClass({
     }
 });
 
+/**
+ * ## Selection Download button helper React component
+ *
+ * Renders button for downloading selection as a CSV. Also handles generating that CSV and opening it
+ * for download
+ */
 var DownloadButton = React.createClass({
     downloadSelected: function() {
         var csvContent = 'data:text/csv;charset=utf-8,';

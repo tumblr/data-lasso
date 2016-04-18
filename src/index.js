@@ -9,34 +9,17 @@ var dispatcher = require('./dispatcher');
 var defaults = require('./helpers/optionDefaults');
 var store = require('./store');
 
-var Uploader = require('./views/Uploader');
-var AxisControls = require('./views/AxisControls');
-var Graph = require('./views/Graph');
-var Hud = require('./views/Hud');
-var ModeIndicator = require('./views/ModeIndicator');
-var SelectionControls = require('./views/SelectionControls');
+var Graph = require('./components/Graph');
+var DataLassoUI = require('./components/DataLassoUI');
+
 
 /**
- * # Data Lasso View
+ * # Data Lasso Class
  *
- * Main view for Data Lasso which handles receiving of options,
- * initializing sub views and modules, if any
+ * Class responsible for initialization of Data Lasso. Receives options,
+ * creates DOM element for Data Lasso and initializes the rest of the components
+ *
  */
-
-var DataLassoUI = React.createClass({
-    render: function() {
-        return (
-            <div>
-                <Uploader/>
-                <AxisControls/>
-                <Hud/>
-                <ModeIndicator/>
-                <SelectionControls/>
-            </div>
-        )
-    }
-});
-
 var DataLasso = class DataLasso {
     constructor (options) {
         this.modules = options.modules;
@@ -53,6 +36,9 @@ var DataLasso = class DataLasso {
         this.render();
     }
 
+    /**
+     * Creates DOM element for Data Lasso
+     */
     createElement () {
         this.$el = $('<div></div>', {
             class: 'datalasso-container'
@@ -68,7 +54,6 @@ var DataLasso = class DataLasso {
      * and a constructor function. That constructor function will
      * be called for every module with a hash containing:
      *
-     *  - Event bus
      *  - Container element
      *  - Store
      *  - Dispatcher
@@ -87,6 +72,14 @@ var DataLasso = class DataLasso {
         }, this);
     }
 
+    /**
+     * Render Data Lasso:
+     *  - Attach styles to the DOM
+     *  - Render UI
+     *  - Set up and render 3d space
+     *
+     * @returns {HTMLElement} - Element containing Data Lasso
+     */
     render () {
         styles.append();
         ReactDom.render(<DataLassoUI/>, this.el);
