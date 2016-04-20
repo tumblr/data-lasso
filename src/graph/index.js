@@ -4,11 +4,12 @@ var _ = require('lodash');
 var THREE = require('three');
 var OrbitControls = require('three-orbit-controls')(THREE);
 var helvetiker = require('three.regular.helvetiker');
-var SelectionHelper = require('../helpers/selection');
-var axisGeometry = require('../geometry/axis');
-var Mouse = require('../helpers/mouse');
+
+var SelectionHelper = require('./helpers/selection');
+var axisGeometry = require('./geometry/axis');
+var Mouse = require('./helpers/mouse');
 var shaders = require('../templates/shaders.tpl');
-var textures = require('../helpers/texture');
+var dotTexture = require('./texture/dot');
 var store = require('../store');
 var dispatcher = require('../dispatcher');
 
@@ -23,8 +24,6 @@ var dispatcher = require('../dispatcher');
  *
  * When initiated, that class sets up three.js, creates an element to which
  * three.js will render to and returns instance of the class
- *
- * @TODO: Move all of the graph stuff into it's own place
  */
 
 let graphOptions = {
@@ -37,7 +36,7 @@ let graphOptions = {
     pointSelectionFactor: 2,
 };
 
-var Graph = class Graph{
+var Graph = class Graph {
     constructor(options) {
         _.extend(this, graphOptions);
         this.options = options;
@@ -99,7 +98,7 @@ var Graph = class Graph{
         };
         var shaderUniforms = {
             color: {type: 'c', value: new THREE.Color(0xffffff)},
-            texture: {type: 't', value: textures.dotTexture()},
+            texture: {type: 't', value: dotTexture()},
         };
         this.shaderMaterial = new THREE.ShaderMaterial({
             uniforms:       shaderUniforms,

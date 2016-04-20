@@ -1,7 +1,7 @@
 'use strict';
 
 var _ = require('lodash');
-var store = require('../store');
+var store = require('../../store');
 var React = require('react');
 
 // Margin from HUD element to selected entry

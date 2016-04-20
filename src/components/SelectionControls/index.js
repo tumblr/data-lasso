@@ -1,8 +1,8 @@
 'use strict';
 
 var _ = require('lodash');
-var store = require('../store');
-var dispatcher = require('../dispatcher');
+var store = require('../../store');
+var dispatcher = require('../../dispatcher');
 var React = require('react');
 
 /**
@@ -108,7 +108,7 @@ var DownloadButton = React.createClass({
         var csvContent = 'data:text/csv;charset=utf-8,';
         csvContent += _.keys(store.get('attributes')).join(',');
 
-        _.each(store.get('entries'), function (entry, index) {
+        _.forEach(store.get('entries'), function (entry, index) {
             if (entry.isSelected) {
                 csvContent += _.values(entry).join(',');
                 csvContent += (index < store.get('selectedEntries').length) ? '\n' : '';

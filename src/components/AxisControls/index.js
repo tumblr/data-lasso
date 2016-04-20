@@ -1,8 +1,8 @@
 'use strict';
 
 var _ = require('lodash');
-var store = require('../store');
-var dispatcher = require('../dispatcher');
+var store = require('../../store');
+var dispatcher = require('../../dispatcher');
 var React = require('react');
 
 /**
@@ -36,7 +36,7 @@ var AxisControls = React.createClass({
         e.preventDefault();
         let mappings = _.clone(this.state.mappings);
 
-        _.each(this.state.mappings, (mapping, axis) => {
+        _.forEach(this.state.mappings, (mapping, axis) => {
             var selectValue = $(e.target).find('.axis-selector[name="' + axis + '"]').val();
             mappings[axis] = selectValue ? selectValue : null;
         });

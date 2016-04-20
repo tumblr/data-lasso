@@ -6,12 +6,22 @@ var ReactDom = require('react-dom');
 
 var styles = require('./styles/index.scss');
 var dispatcher = require('./dispatcher');
-var defaults = require('./helpers/optionDefaults');
 var store = require('./store');
 
-var Graph = require('./components/Graph');
+var Graph = require('./graph');
 var DataLassoUI = require('./components/DataLassoUI');
 
+/**
+ * Default options that Data Lasso is initialized with that can be overwritten
+ */
+var defaults = {
+    /** Size of the graph */
+    graphSize: 2000,
+    /** Size of the axis legend text */
+    legendSize: 50,
+    /** Color of the legend text */
+    legendColor: 0xffffff,
+};
 
 /**
  * # Data Lasso Class

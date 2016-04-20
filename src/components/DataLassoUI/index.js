@@ -2,11 +2,11 @@
 
 var React = require('react');
 
-var Uploader = require('./Uploader');
-var AxisControls = require('./AxisControls');
-var Hud = require('./Hud');
-var ModeIndicator = require('./ModeIndicator');
-var SelectionControls = require('./SelectionControls');
+var Uploader = require('../Uploader');
+var AxisControls = require('../AxisControls');
+var Hud = require('../Hud');
+var ModeIndicator = require('../ModeIndicator');
+var SelectionControls = require('../SelectionControls');
 
 
 /**
