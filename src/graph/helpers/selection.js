@@ -2,9 +2,8 @@
 
 var _ = require('lodash');
 var THREE = require('three');
-var Class = require('../lib/class');
-var store = require('../store');
-var dispatcher = require('../dispatcher');
+var store = require('../../store');
+var dispatcher = require('../../dispatcher');
 
 /**
  * ## Selection Helper
@@ -37,9 +36,8 @@ var planeSize = 2000;
  */
 var lassoPoints = 4;
 
-var SelectionHelper = Class.extend({
-
-    initialize: function (scene, camera, mouse) {
+var SelectionHelper = class {
+    constructor (scene, camera, mouse) {
         this.camera = camera;
         this.scene = scene;
         this.mouse = mouse;
@@ -51,17 +49,17 @@ var SelectionHelper = Class.extend({
         store.on('change:entries', _.bind(this.onEntriesChange, this));
 
         document.addEventListener('keyup', _.bind(this.onDocumentKeyUp, this), false);
-    },
+    }
 
-    onEntriesChange: function () {
+    onEntriesChange () {
         this.entries = store.get('entries');
-    },
+    }
 
     /**
      * Update the projection plane - an invisible
      * plane between the camera and the graph
      */
-    updateProjectionPlane: function () {
+    updateProjectionPlane () {
         if (!this.projectionPlane) {
             var planeMaterial = new THREE.MeshBasicMaterial({color: 0xFFFFFF, transparent: true, opacity: 0.0});
             var planeGeometry = new THREE.PlaneGeometry(planeSize, planeSize, 1);
@@ -79,15 +77,14 @@ var SelectionHelper = Class.extend({
 
         this.projectionPlane.position.copy(this.planePosition);
         this.projectionPlane.rotation.setFromQuaternion(this.camera.quaternion);
-
-    },
+    }
 
     /**
      * Based on mouse position, get point on projection
      * plane that is essentially an invisible wall between
      * camera and graph
      */
-    getPointOnProjectionPlane: function (mouseVector) {
+    getPointOnProjectionPlane (mouseVector) {
         var raycaster = new THREE.Raycaster();
 
         raycaster.setFromCamera(mouseVector, this.camera);
@@ -99,12 +96,12 @@ var SelectionHelper = Class.extend({
         }
 
         return false;
-    },
+    }
 
     /**
      * DOM Event Listeners
      */
-    onDocumentKeyUp: function (e) {
+    onDocumentKeyUp (e) {
         switch (e.keyCode) {
             case 32:
                 this.startSelectionMode();
@@ -114,8 +111,9 @@ var SelectionHelper = Class.extend({
                 this.stopSelectionMode();
                 break;
         }
-    },
-    onMouseDown: function (e) {
+    }
+
+    onMouseDown (e) {
         switch (e.button) {
             case THREE.MOUSE.LEFT:
                 if (this.selectionMode) {
@@ -123,13 +121,13 @@ var SelectionHelper = Class.extend({
                 }
                 break;
         }
-    },
-    onMouseMove: function (e) {
+    }
+
+    onMouseMove (e) {
         if (this.selectionMode) {
             this.drawPreviewLine(e.vector);
         }
-    },
-
+    }
 
     /**
      * ### Start Selection Mode
@@ -137,27 +135,27 @@ var SelectionHelper = Class.extend({
      * Sets internal flag, cleans the state for a new
      * selection and turns off orbit camera.
      */
-    startSelectionMode: function () {
+    startSelectionMode () {
         this.selectionMode = true;
 
         this.lassoPoints = [];
         this.lassoLineSegments = [];
 
         dispatcher.dispatch({actionType: 'selection-started'});
-    },
+    }
 
     /**
      * ### Stop Selection Mode
      *
      * Brings orbit camera back on
      */
-    stopSelectionMode: function () {
+    stopSelectionMode () {
         this.selectionMode = false;
 
         this.cancelSelection();
 
         dispatcher.dispatch({actionType: 'selection-stopped'});
-    },
+    }
 
 
     /**
@@ -168,7 +166,7 @@ var SelectionHelper = Class.extend({
      *
      * @param mouseVector
      */
-    drawPreviewLine: function (mouseVector) {
+    drawPreviewLine (mouseVector) {
         this.clearPreviewLine();
 
         if (this.lassoPoints.length) {
@@ -176,16 +174,16 @@ var SelectionHelper = Class.extend({
 
             this.scene.add(this.previewLine);
         }
-    },
+    }
 
     /**
      * ### Clear Preview Line
      */
-    clearPreviewLine: function () {
+    clearPreviewLine () {
         if (this.previewLine) {
             this.scene.remove(this.previewLine);
         }
-    },
+    }
 
     /**
      * ### Get Line Mesh
@@ -196,7 +194,7 @@ var SelectionHelper = Class.extend({
      * @param pointB
      * @returns {mesh} - line mesh
      */
-    getLineMesh: function (pointA, pointB) {
+    getLineMesh (pointA, pointB) {
         var material = new THREE.LineBasicMaterial({color: 0xffffff, trasparent: true});
         material.opacity = 0.25;
 
@@ -206,8 +204,7 @@ var SelectionHelper = Class.extend({
         geometry.vertices.push(pointB);
 
         return new THREE.Line(geometry, material);
-    },
-
+    }
 
     /**
      * ### Add Lasso Point
@@ -217,7 +214,7 @@ var SelectionHelper = Class.extend({
      *
      * @param mouseVector {vector3}
      */
-    addLassoPoint: function (mouseVector) {
+    addLassoPoint (mouseVector) {
         var newPoint = this.getPointOnProjectionPlane(mouseVector);
 
         if (newPoint) {
@@ -234,7 +231,7 @@ var SelectionHelper = Class.extend({
                 this.finalizeSelection();
             }
         }
-    },
+    }
 
     /**
      * ### Finalize Selection
@@ -243,7 +240,7 @@ var SelectionHelper = Class.extend({
      * visual helpers, stop selection mode and initialize
      * calculation of what was selected
      */
-    finalizeSelection: function () {
+    finalizeSelection () {
         this.clearPreviewLine();
 
         // Remove the drawn lasso 100ms later to give user visual feedback
@@ -252,40 +249,39 @@ var SelectionHelper = Class.extend({
         this.stopSelectionMode();
 
         this.performSelection();
-    },
+    }
 
     /**
      * ### Cancel Selection
      *
      * Clean up if selection ended mid flight
      */
-    cancelSelection: function () {
+    cancelSelection () {
         this.clearPreviewLine();
         this.removeLassoLineSegments();
-    },
+    }
 
     /**
      * ### Add Lasso Segment
      *
      * Draw a line of lasso selection tool based on two points in space
      */
-    addLassoSegment: function (pointA, pointB) {
+    addLassoSegment (pointA, pointB) {
         var line = this.getLineMesh(pointA, pointB);
         this.scene.add(line);
         this.lassoLineSegments.push(line);
-    },
+    }
 
     /**
      * ### Remove Lasso Segment
      *
      * Remove polygonal lasso that was drawn during selection
      */
-    removeLassoLineSegments: function () {
+    removeLassoLineSegments () {
         _.each(this.lassoLineSegments, function (segment) {
             this.scene.remove(segment);
         }, this);
-    },
-
+    }
 
     /**
      * ### Perform Selection
@@ -296,7 +292,7 @@ var SelectionHelper = Class.extend({
      * If initially selection yields no results, construct reversed frustum
      * and try selection again.
      */
-    performSelection: function () {
+    performSelection () {
         var frustum = this.constructFrustum();
         var selectedEntries = this.findEntriesInsideFrustum(frustum);
 
@@ -308,7 +304,7 @@ var SelectionHelper = Class.extend({
         selectedEntries = this.findEntriesInsideFrustum(frustum);
 
         dispatcher.dispatch({actionType: 'selection-made', selectedEntries: selectedEntries});
-    },
+    }
 
     /**
      * ### Construct Frustum
@@ -318,7 +314,7 @@ var SelectionHelper = Class.extend({
      *
      * @param inverse - when set to true, frustum will be built in reverse order and will have inversed normals
      */
-    constructFrustum: function (inverse) {
+    constructFrustum (inverse) {
         inverse = inverse || false;
 
         var frustum = [];
@@ -336,7 +332,7 @@ var SelectionHelper = Class.extend({
         }
 
         return frustum;
-    },
+    }
 
     /**
      * ### Find Entries Inside Frustum
@@ -347,7 +343,7 @@ var SelectionHelper = Class.extend({
      * @param frustum - frustum-like object
      * @returns {Array} of selected entry ids
      */
-    findEntriesInsideFrustum: function (frustum) {
+    findEntriesInsideFrustum (frustum) {
         var selected = [];
 
         _.each(this.entries, function (entry) {
@@ -357,7 +353,7 @@ var SelectionHelper = Class.extend({
         }, this);
 
         return selected;
-    },
+    }
 
     /**
      * Check if entry is inside the frustum by checking distance
@@ -366,7 +362,7 @@ var SelectionHelper = Class.extend({
      * Distance from a point to a plain is negative if the
      * point is 'inside' the plane (on the back side of the plane)
      */
-    isPointInsideFrustum: function (point, frustum) {
+    isPointInsideFrustum (point, frustum) {
         for (var i = 0; i < frustum.length; i++) {
             var distance = frustum[i].distanceToPoint(point);
 
@@ -375,7 +371,7 @@ var SelectionHelper = Class.extend({
             }
         }
         return true;
-    },
-});
+    }
+};
 
 module.exports = SelectionHelper;

@@ -2,9 +2,9 @@
 
 var _ = require('lodash');
 var Model = require('backbone').Model;
-var datahelper = require('../helpers/data');
-var initialState = require('./initialState');
 var dispatcher = require('../dispatcher');
+var dataFunctions = require('./data-functions');
+var initialState = require('./initial-state');
 
 /**
  * # Store
@@ -73,6 +73,14 @@ var DataModel = Model.extend({
             case 'zoom-out':
                 this.onZoomOut();
                 break;
+
+            case 'source-change':
+                this.onSourceChange(action);
+                break;
+
+            case 'type-change':
+                this.onTypeChange(action);
+                break;
         }
     },
 
@@ -83,7 +91,7 @@ var DataModel = Model.extend({
         if (!action.entries) {
             throw new Error('New data does not contain any entries');
         }
-        var data = datahelper.processInput(action.entries, this.options);
+        var data = dataFunctions.processInput(action.entries, this.options);
         this.set({
             entries: data.entries,
             attributes: data.attributes,
@@ -141,7 +149,7 @@ var DataModel = Model.extend({
         }
         this.set({
             mappings: action.mappings,
-            scales: datahelper.getUpdatedScales(this.get('entries'), this.options),
+            scales: dataFunctions.getUpdatedScales(this.get('entries'), this.options),
         });
     },
 
@@ -170,7 +178,7 @@ var DataModel = Model.extend({
         this.set({
             entries: newEntries,
             selectedEntries: [],
-            scales: datahelper.getUpdatedScales(newEntries, this.options),
+            scales: dataFunctions.getUpdatedScales(newEntries, this.options),
         });
     },
 
@@ -179,6 +187,24 @@ var DataModel = Model.extend({
      */
     onZoomOut: function () {
         this.restoreLastDataSnapshot();
+    },
+
+    onSourceChange: function (action) {
+        if (!action.source) {
+            throw new Error('Source is not set');
+        }
+        this.set({
+            source: action.source
+        });
+    },
+
+    onTypeChange: function (action) {
+        if (!action.type) {
+            throw new Error('Type is not set');
+        }
+        this.set({
+            type: action.type
+        });
     },
 
     /**

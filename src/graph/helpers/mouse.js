@@ -3,7 +3,6 @@
 var _ = require('lodash');
 var Events = require('backbone').Events;
 var THREE = require('three');
-var Class = require('../lib/class');
 
 /**
  * ## Mouse Helper
@@ -14,9 +13,8 @@ var Class = require('../lib/class');
  * @param $container - container that renderer uses
  */
 
-var Mouse = Class.extend({
-
-    initialize: function ($container) {
+var Mouse = class {
+    constructor ($container) {
         _.extend(this, Events);
 
         this.$container = $container;
@@ -27,23 +25,23 @@ var Mouse = Class.extend({
 
         this.$container[0].addEventListener('mousemove', _.bind(this.onMouseMove, this), false);
         this.$container[0].addEventListener('mousedown', _.bind(this.onMouseDown, this), false);
-    },
+    }
 
     /**
      * Get position vector of the mouse
      *
      * @returns {THREE.Vector2} - three.js vector for mouse cursor position
      */
-    position: function () {
+    position () {
         return this.vector;
-    },
+    }
 
     /**
      * Event listener for `mousemove`
      *
      * @param e - DOM event
      */
-    onMouseMove: function (e) {
+    onMouseMove (e) {
         this.vector.x = (e.offsetX / window.innerWidth) * 2 - 1;
         this.vector.y = -(e.offsetY / window.innerHeight) * 2 + 1;
 
@@ -52,19 +50,19 @@ var Mouse = Class.extend({
             x: e.offsetX,
             y: e.offsetY,
         });
-    },
+    }
 
     /**
      * Event listener for `mousedown`
      *
      * @param e - DOM event
      */
-    onMouseDown: function (e) {
+    onMouseDown (e) {
         this.trigger('datalasso:mouse:down', {
             button: e.button,
             vector: this.vector,
         });
-    },
-});
+    }
+};
 
 module.exports = Mouse;

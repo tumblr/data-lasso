@@ -24,6 +24,4 @@ var dotTexture = function () {
     return texture;
 };
 
-module.exports = {
-    dotTexture: dotTexture,
-};
+module.exports = dotTexture;

@@ -1,45 +1,60 @@
 'use strict';
 
 var _ = require('lodash');
-var Backbone = require('backbone');
+var React = require('react');
+var ReactDom = require('react-dom');
 
 var styles = require('./styles/index.scss');
 var dispatcher = require('./dispatcher');
-var defaults = require('./helpers/optionDefaults');
 var store = require('./store');
 
-var Uploader = require('./views/Uploader');
-var AxisControls = require('./views/AxisControls');
-var Graph = require('./views/Graph');
-var Hud = require('./views/Hud');
-var ModeIndicator = require('./views/ModeIndicator');
-var SelectionControls = require('./views/SelectionControls');
+var Graph = require('./graph');
+var DataLassoUI = require('./components/DataLassoUI');
 
 /**
- * # Data Lasso View
- *
- * Main view for Data Lasso which handles receiving of options,
- * initializing sub views and modules, if any
+ * Default options that Data Lasso is initialized with that can be overwritten
  */
+var defaults = {
+    /** Size of the graph */
+    graphSize: 2000,
+    /** Size of the axis legend text */
+    legendSize: 50,
+    /** Color of the legend text */
+    legendColor: 0xffffff,
+};
 
-var DataLassoView = Backbone.View.extend({
-
-    className: 'datalasso-container',
-
-    defaults: defaults,
-
-    initialize: function (options) {
+/**
+ * # Data Lasso Class
+ *
+ * Class responsible for initialization of Data Lasso. Receives options,
+ * creates DOM element for Data Lasso and initializes the rest of the components
+ *
+ */
+var DataLasso = class DataLasso {
+    constructor (options) {
         this.modules = options.modules;
-        this.options = _.defaults({}, _.omit(options, 'modules'), this.defaults);
+        this.options = _.defaults(defaults, _.omit(options, 'modules'), this.defaults);
 
         dispatcher.dispatch({actionType: 'options-set', options: this.options});
+
+        this.createElement();
 
         if (this.modules) {
             this.initializeModules(this.modules);
         }
 
         this.render();
-    },
+    }
+
+    /**
+     * Creates DOM element for Data Lasso
+     */
+    createElement () {
+        this.$el = $('<div></div>', {
+            class: 'datalasso-container'
+        });
+        this.el = this.$el[0];
+    }
 
     /**
      * Initialize modules that can be plugged into
@@ -49,14 +64,13 @@ var DataLassoView = Backbone.View.extend({
      * and a constructor function. That constructor function will
      * be called for every module with a hash containing:
      *
-     *  - Event bus
      *  - Container element
      *  - Store
      *  - Dispatcher
      *
      * @param {array} modules: Data Lasso modules to use
      */
-    initializeModules: function (modules) {
+    initializeModules (modules) {
         this.modules = {};
 
         _.forEach(modules, function (module, name) {
@@ -66,39 +80,25 @@ var DataLassoView = Backbone.View.extend({
                 $container: this.$el,
             });
         }, this);
-    },
+    }
 
-    render: function () {
+    /**
+     * Render Data Lasso:
+     *  - Attach styles to the DOM
+     *  - Render UI
+     *  - Set up and render 3d space
+     *
+     * @returns {HTMLElement} - Element containing Data Lasso
+     */
+    render () {
         styles.append();
-
-        // Uploader
-        this.uploader = new Uploader();
-        this.$el.append(this.uploader.render().el);
-
-        // Axis Controls
-        this.axisControls = new AxisControls(this.options);
-        this.$el.append(this.axisControls.render().el);
-
-        // Axis Controls
+        ReactDom.render(<DataLassoUI/>, this.el);
         this.graph = new Graph(this.options);
-        this.$el.append(this.graph.render().el);
+        this.$el.append(this.graph.el);
+        return this.el;
+    }
+};
 
-        // HUD
-        this.hud = new Hud();
-        this.$el.append(this.hud.render().el);
-
-        // Mode indicator
-        this.modeIndicator = new ModeIndicator();
-        this.$el.append(this.modeIndicator.render().el);
-
-        // Selection controls
-        this.selectionControls = new SelectionControls();
-        this.$el.append(this.selectionControls.render().el);
-
-        return this;
-    },
-});
-
-module.exports = DataLassoView;
+module.exports = DataLasso;
 
 window.DataLasso = module.exports;

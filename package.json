@@ -32,6 +32,7 @@
     "gulp-serve": "^1.2.0",
     "gulp-sourcemaps": "^1.6.0",
     "jstify": "^0.12.0",
+    "reactify": "^1.1.1",
     "sassr": "^0.1.1",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0",
@@ -43,6 +44,8 @@
     "flux": "^2.1.1",
     "jquery": "^2.1.4",
     "lodash": "^3.10.1",
+    "react": "^15.0.1",
+    "react-dom": "^15.0.1",
     "three": "^0.71.1",
     "three-orbit-controls": "^71.0.0",
     "three.regular.helvetiker": "^1.0.0"
