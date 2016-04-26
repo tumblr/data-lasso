@@ -64,13 +64,15 @@ class KeyboardHelper {
 
     startSelectionMode () {
         dispatcher.dispatch({
-            actionType: 'selection-started'
+            actionType: 'mode-changed',
+            mode: 'selection',
         });
     }
 
     stopSelectionMode () {
         dispatcher.dispatch({
-            actionType: 'selection-stopped'
+            actionType: 'mode-changed',
+            mode: 'view',
         });
     }
 }

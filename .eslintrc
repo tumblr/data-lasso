@@ -4,6 +4,10 @@
     "parser": "espree",
     "ecmaFeatures": {},
 
+    "parserOptions": {
+        "ecmaVersion": 6
+    },
+
     //
     // http://eslint.org/docs/rules/
     //
@@ -279,6 +283,7 @@
 
     "env": {
         "browser": true,
-        "commonjs": true
+        "commonjs": true,
+        "es6": true
     }
 }

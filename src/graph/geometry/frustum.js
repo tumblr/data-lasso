@@ -6,15 +6,39 @@ var THREE = require('three');
 /**
  * # Frustum
  *
- * Frustum-like structure that consists of four planes describing the selection
+ * Frustum-like structure that consists of four planes containing the selection.
+ *
+ * It is described by 5 points - one for a camera that is the tip of the selection
+ * and 4 points that are in the base of the frustum.
+ * 
+ *                [camera]
+ *                   ▼
+ *
+ *                  /-\\
+ *                 /---\ \
+ *                /-----\  \
+ *               /-------\   \
+ *              /---------\    \
+ *             /-----------\     \
+ *            /-------------\      \
+ *           /---------------\       \
+ *          /-----------------\        \
+ *         /-------------------\         \
+ *        /---------------------\          \ p3
+ *       /-----------------------\        /
+ *      /-------------------------\     /
+ *     /---------------------------\   /
+ *    /-----------------------------\/
+ *  p1                              p2
+ *
  *
  * @param {Vector3} cameraPosition - Current position of the camera
- * @param {[Vector3]} lassoPoints - Array of vectors for every point of lasso selection
+ * @param {[Vector3]} points - Array of vectors for every point of frustum's bottom
  */
 class Frustum {
-    constructor(cameraPosition, lassoPoints) {
+    constructor(cameraPosition, points) {
         this.cameraPosition = cameraPosition;
-        this.lassoPoints = lassoPoints;
+        this.points = points;
         this.planes = this.createFrustumPlanes();
     }
 
@@ -37,15 +61,15 @@ class Frustum {
     createFrustumPlanes (inverse = false) {
         var planes = [];
         if (!inverse) {
-            planes.push(new THREE.Plane().setFromCoplanarPoints(this.lassoPoints[0], this.cameraPosition, this.lassoPoints[1]));
-            planes.push(new THREE.Plane().setFromCoplanarPoints(this.lassoPoints[1], this.cameraPosition, this.lassoPoints[2]));
-            planes.push(new THREE.Plane().setFromCoplanarPoints(this.lassoPoints[2], this.cameraPosition, this.lassoPoints[3]));
-            planes.push(new THREE.Plane().setFromCoplanarPoints(this.lassoPoints[3], this.cameraPosition, this.lassoPoints[0]));
+            planes.push(new THREE.Plane().setFromCoplanarPoints(this.points[0], this.cameraPosition, this.points[1]));
+            planes.push(new THREE.Plane().setFromCoplanarPoints(this.points[1], this.cameraPosition, this.points[2]));
+            planes.push(new THREE.Plane().setFromCoplanarPoints(this.points[2], this.cameraPosition, this.points[3]));
+            planes.push(new THREE.Plane().setFromCoplanarPoints(this.points[3], this.cameraPosition, this.points[0]));
         } else {
-            planes.push(new THREE.Plane().setFromCoplanarPoints(this.lassoPoints[1], this.cameraPosition, this.lassoPoints[0]));
-            planes.push(new THREE.Plane().setFromCoplanarPoints(this.lassoPoints[2], this.cameraPosition, this.lassoPoints[1]));
-            planes.push(new THREE.Plane().setFromCoplanarPoints(this.lassoPoints[3], this.cameraPosition, this.lassoPoints[2]));
-            planes.push(new THREE.Plane().setFromCoplanarPoints(this.lassoPoints[0], this.cameraPosition, this.lassoPoints[3]));
+            planes.push(new THREE.Plane().setFromCoplanarPoints(this.points[1], this.cameraPosition, this.points[0]));
+            planes.push(new THREE.Plane().setFromCoplanarPoints(this.points[2], this.cameraPosition, this.points[1]));
+            planes.push(new THREE.Plane().setFromCoplanarPoints(this.points[3], this.cameraPosition, this.points[2]));
+            planes.push(new THREE.Plane().setFromCoplanarPoints(this.points[0], this.cameraPosition, this.points[3]));
         }
         return planes;
     }

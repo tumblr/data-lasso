@@ -46,6 +46,10 @@ var DataModel = Model.extend({
                 this.onFileUpload(action);
                 break;
 
+            case 'mode-changed':
+                this.onModeChange(action);
+                break;
+
             case 'selection-started':
                 this.onSelectionStart();
                 break;
@@ -105,13 +109,22 @@ var DataModel = Model.extend({
         });
     },
 
+    onModeChange: function (action) {
+        if (!action.mode) {
+            throw new Error('Mode is not specified');
+        }
+        this.set({
+            mode: action.mode,
+            controls: action.mode === 'view',
+            selectionInProgress: false,
+        });
+    },
+
     /**
      * New selection started (user started using a selection tool).
      */
     onSelectionStart: function () {
         this.set({
-            mode: 'selection',
-            controls: false,
             selectionInProgress: true,
         });
     },
@@ -121,8 +134,6 @@ var DataModel = Model.extend({
      */
     onSelectionStop: function () {
         this.set({
-            mode: 'view',
-            controls: true,
             selectionInProgress: false,
         });
     },
@@ -131,9 +142,17 @@ var DataModel = Model.extend({
      * Selection modifier was changed (add to / subtract from selection)
      */
     onSelectionModifierChange: function (action) {
-        this.set({
-            selectionModifier: action.selectionModifier,
-        });
+        if (this.get('mode') === 'selection') {
+            if (this.get('selectionInProgress')) {
+                this.once('change:selectionInProgress', () => {
+                    this.set({selectionModifier: action.selectionModifier});
+                });
+            } else {
+                this.set({
+                    selectionModifier: action.selectionModifier,
+                });
+            }
+        }
     },
 
     /**

@@ -4,7 +4,7 @@ var _ = require('lodash');
 var THREE = require('three');
 var store = require('../../store');
 var dispatcher = require('../../dispatcher');
-var Frustum = require('./selection/frustum');
+var Frustum = require('../geometry/frustum');
 
 /**
  * ## Selection Helper
@@ -47,13 +47,13 @@ var SelectionHelper = class {
         this.mouse.on('datalasso:mouse:down', this.onMouseDown.bind(this));
 
         store.on('change:mode', this.onModeChange.bind(this));
+
+        this.lassoPoints = [];
+        this.lassoLineSegments = [];
     }
 
     onModeChange () {
-        if (store.get('mode') === 'selection') {
-            this.lassoPoints = [];
-            this.lassoLineSegments = [];
-        } else {
+        if (store.get('mode') === 'view') {
             this.cancelSelection();
         }
     }
@@ -107,6 +107,11 @@ var SelectionHelper = class {
         switch (e.button) {
             case THREE.MOUSE.LEFT:
                 if (store.get('mode') === 'selection') {
+                    if (!store.get('selectionInProgress')) {
+                        this.lassoPoints = [];
+                        this.lassoLineSegments = [];
+                        dispatcher.dispatch({actionType: 'selection-started'});
+                    }
                     this.addLassoPoint(e.vector);
                 }
                 break;
@@ -195,6 +200,17 @@ var SelectionHelper = class {
     }
 
     /**
+     * ### Cancel Selection
+     *
+     * Clean up if selection ended mid flight
+     */
+    cancelSelection () {
+        this.clearPreviewLine();
+        this.removeLassoLineSegments();
+
+    }
+
+    /**
      * ### Finalize Selection
      *
      * Coordinate end of selection. Remove leftover
@@ -207,19 +223,8 @@ var SelectionHelper = class {
         // Remove the drawn lasso 100ms later to give user visual feedback
         _.delay(_.bind(this.removeLassoLineSegments, this), 100);
 
+        this.performSelection(store.get('selectionModifier'));
         dispatcher.dispatch({actionType: 'selection-stopped'});
-
-        this.performSelection();
-    }
-
-    /**
-     * ### Cancel Selection
-     *
-     * Clean up if selection ended mid flight
-     */
-    cancelSelection () {
-        this.clearPreviewLine();
-        this.removeLassoLineSegments();
     }
 
     /**
@@ -242,6 +247,8 @@ var SelectionHelper = class {
         _.forEach(this.lassoLineSegments, (segment) => {
             this.scene.remove(segment);
         });
+        this.lassoPoints = [];
+        this.lassoLineSegments = [];
     }
 
     /**
@@ -252,11 +259,13 @@ var SelectionHelper = class {
      *
      * If initially selection yields no results, construct reversed frustum
      * and try selection again.
+     *
+     * @param selectionModifier - Selection modifier at the time of the selection
      */
-    performSelection () {
+    performSelection (selectionModifier) {
         var result = [];
 
-        switch (store.get('selectionModifier')) {
+        switch (selectionModifier) {
             case 'add':
                 var addedEntries = this.getSelectedEntries(store.get('entries'));
                 result = _.uniq(_.concat(store.get('selectedEntries'), addedEntries));
