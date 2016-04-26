@@ -71,15 +71,13 @@ var DataLasso = class DataLasso {
      * @param {array} modules: Data Lasso modules to use
      */
     initializeModules (modules) {
-        this.modules = {};
-
-        _.forEach(modules, function (module, name) {
-            this.modules[name] = new module.constructor({
+        this.modules = _.transform(modules, (result, module, name) => {
+            result[name] = new module.constructor({
                 store: store,
                 dispatcher: dispatcher,
                 $container: this.$el,
             });
-        }, this);
+        });
     }
 
     /**

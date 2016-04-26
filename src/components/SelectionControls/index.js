@@ -108,12 +108,12 @@ var DownloadButton = React.createClass({
         var csvContent = 'data:text/csv;charset=utf-8,';
         csvContent += _.keys(store.get('attributes')).join(',');
 
-        _.forEach(store.get('entries'), function (entry, index) {
+        _.forEach(store.get('entries'), (entry, index) => {
             if (entry.isSelected) {
                 csvContent += _.values(entry).join(',');
                 csvContent += (index < store.get('selectedEntries').length) ? '\n' : '';
             }
-        }, this);
+        });
         window.open(encodeURI(csvContent));
     },
 

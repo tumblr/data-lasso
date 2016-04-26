@@ -112,6 +112,7 @@ var DataModel = Model.extend({
         this.set({
             mode: 'selection',
             controls: false,
+            selectionInProgress: true,
         });
     },
 
@@ -122,6 +123,7 @@ var DataModel = Model.extend({
         this.set({
             mode: 'view',
             controls: true,
+            selectionInProgress: false,
         });
     },
 

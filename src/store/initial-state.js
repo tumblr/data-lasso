@@ -53,6 +53,11 @@ module.exports = {
     selectionModifier: null,
 
     /**
+     * Selection in progress flag
+     */
+    selectionInProgress: false,
+
+    /**
      * Object containing mappings of attributes to axes
      */
     mappings: {

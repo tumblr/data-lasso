@@ -63,11 +63,15 @@ class KeyboardHelper {
     }
 
     startSelectionMode () {
-        dispatcher.dispatch({actionType: 'selection-started'});
+        dispatcher.dispatch({
+            actionType: 'selection-started'
+        });
     }
 
     stopSelectionMode () {
-        dispatcher.dispatch({actionType: 'selection-stopped'});
+        dispatcher.dispatch({
+            actionType: 'selection-stopped'
+        });
     }
 }
 
