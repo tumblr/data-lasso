@@ -58,6 +58,10 @@ var DataModel = Model.extend({
                 this.onNewSelection(action);
                 break;
 
+            case 'selection-modifier-changed':
+                this.onSelectionModifierChange(action);
+                break;
+
             case 'axis-mappings-updated':
                 this.onNewMappings(action);
                 break;
@@ -116,8 +120,17 @@ var DataModel = Model.extend({
      */
     onSelectionStop: function () {
         this.set({
-            mode: 'normal',
+            mode: 'view',
             controls: true,
+        });
+    },
+
+    /**
+     * Selection modifier was changed (add to / subtract from selection)
+     */
+    onSelectionModifierChange: function (action) {
+        this.set({
+            selectionModifier: action.selectionModifier,
         });
     },
 
@@ -194,7 +207,7 @@ var DataModel = Model.extend({
             throw new Error('Source is not set');
         }
         this.set({
-            source: action.source
+            source: action.source,
         });
     },
 
@@ -203,7 +216,7 @@ var DataModel = Model.extend({
             throw new Error('Type is not set');
         }
         this.set({
-            type: action.type
+            type: action.type,
         });
     },
 

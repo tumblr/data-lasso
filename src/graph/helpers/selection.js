@@ -41,23 +41,32 @@ var SelectionHelper = class {
         this.camera = camera;
         this.scene = scene;
         this.mouse = mouse;
-        this.selectionMode = false;
 
         this.mouse.on('datalasso:mouse:move', _.bind(this.onMouseMove, this));
         this.mouse.on('datalasso:mouse:down', _.bind(this.onMouseDown, this));
 
         store.on('change:entries', _.bind(this.onEntriesChange, this));
-
-        document.addEventListener('keyup', _.bind(this.onDocumentKeyUp, this), false);
+        store.on('change:mode', _.bind(this.onModeChange, this));
     }
 
     onEntriesChange () {
         this.entries = store.get('entries');
     }
 
+    onModeChange () {
+        if (store.get('mode') === 'selection') {
+            this.lassoPoints = [];
+            this.lassoLineSegments = [];
+        } else {
+            this.cancelSelection();
+        }
+    }
+
     /**
      * Update the projection plane - an invisible
      * plane between the camera and the graph
+     *
+     * Called by the graph when 3d space is moved, rotated or scaled.
      */
     updateProjectionPlane () {
         if (!this.projectionPlane) {
@@ -98,25 +107,11 @@ var SelectionHelper = class {
         return false;
     }
 
-    /**
-     * DOM Event Listeners
-     */
-    onDocumentKeyUp (e) {
-        switch (e.keyCode) {
-            case 32:
-                this.startSelectionMode();
-                break;
-
-            case 27:
-                this.stopSelectionMode();
-                break;
-        }
-    }
 
     onMouseDown (e) {
         switch (e.button) {
             case THREE.MOUSE.LEFT:
-                if (this.selectionMode) {
+                if (store.get('mode') === 'selection') {
                     this.addLassoPoint(e.vector);
                 }
                 break;
@@ -124,38 +119,11 @@ var SelectionHelper = class {
     }
 
     onMouseMove (e) {
-        if (this.selectionMode) {
+        if (store.get('mode') === 'selection') {
             this.drawPreviewLine(e.vector);
         }
     }
 
-    /**
-     * ### Start Selection Mode
-     *
-     * Sets internal flag, cleans the state for a new
-     * selection and turns off orbit camera.
-     */
-    startSelectionMode () {
-        this.selectionMode = true;
-
-        this.lassoPoints = [];
-        this.lassoLineSegments = [];
-
-        dispatcher.dispatch({actionType: 'selection-started'});
-    }
-
-    /**
-     * ### Stop Selection Mode
-     *
-     * Brings orbit camera back on
-     */
-    stopSelectionMode () {
-        this.selectionMode = false;
-
-        this.cancelSelection();
-
-        dispatcher.dispatch({actionType: 'selection-stopped'});
-    }
 
 
     /**
@@ -246,7 +214,7 @@ var SelectionHelper = class {
         // Remove the drawn lasso 100ms later to give user visual feedback
         _.delay(_.bind(this.removeLassoLineSegments, this), 100);
 
-        this.stopSelectionMode();
+        dispatcher.dispatch({actionType: 'selection-stopped'});
 
         this.performSelection();
     }
