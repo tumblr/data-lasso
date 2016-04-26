@@ -44,6 +44,11 @@
             background-color: $dl-background-subtle;
             color: $dl-color-text;
         }
+
+        &.transparent {
+            background: none;
+            color: $dl-color-text;
+        }
     }
 
     .text-input {
