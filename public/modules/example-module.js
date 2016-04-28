@@ -44,20 +44,20 @@ var ExampleModule = Backbone.View.extend({
 
     className: 'sample-data-lasso-module',
 
-    template: _.template("Data attributes count: <%= (_.keys(attributes)).length %>"),
+    template: _.template('Data attributes count: <%= (_.keys(attributes)).length %>'),
 
     initialize: function (options) {
         this.dlStore = options.store;
         this.dlDispatcher = options.dispatcher;
-        this.$container = options.$container;
+        this.container = options.container;
 
         this.listenTo(this.dlStore, 'change:attributes', this._onNewInput);
 
         this.$el.css({
-            'position': 'absolute',
-            'top': '10px',
-            'right': '10px',
-            'color': '#ffffff'
+            position: 'absolute',
+            top: '10px',
+            right: '10px',
+            color: '#ffffff',
         });
 
         this.render();
@@ -70,6 +70,6 @@ var ExampleModule = Backbone.View.extend({
     render: function (attributes) {
         attributes || (attributes = []);
         this.$el.html(this.template({attributes: attributes}));
-        this.$container.append(this.$el);
+        this.container.appendChild(this.el);
     },
 });
