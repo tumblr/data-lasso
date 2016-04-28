@@ -46,6 +46,10 @@ var DataModel = Model.extend({
                 this.onFileUpload(action);
                 break;
 
+            case 'mode-changed':
+                this.onModeChange(action);
+                break;
+
             case 'selection-started':
                 this.onSelectionStart();
                 break;
@@ -56,6 +60,10 @@ var DataModel = Model.extend({
 
             case 'selection-made':
                 this.onNewSelection(action);
+                break;
+
+            case 'selection-modifier-changed':
+                this.onSelectionModifierChange(action);
                 break;
 
             case 'axis-mappings-updated':
@@ -101,13 +109,23 @@ var DataModel = Model.extend({
         });
     },
 
+    onModeChange: function (action) {
+        if (!action.mode) {
+            throw new Error('Mode is not specified');
+        }
+        this.set({
+            mode: action.mode,
+            controls: action.mode === 'view',
+            selectionInProgress: false,
+        });
+    },
+
     /**
      * New selection started (user started using a selection tool).
      */
     onSelectionStart: function () {
         this.set({
-            mode: 'selection',
-            controls: false,
+            selectionInProgress: true,
         });
     },
 
@@ -116,9 +134,25 @@ var DataModel = Model.extend({
      */
     onSelectionStop: function () {
         this.set({
-            mode: 'normal',
-            controls: true,
+            selectionInProgress: false,
         });
+    },
+
+    /**
+     * Selection modifier was changed (add to / subtract from selection)
+     */
+    onSelectionModifierChange: function (action) {
+        if (this.get('mode') === 'selection') {
+            if (this.get('selectionInProgress')) {
+                this.once('change:selectionInProgress', () => {
+                    this.set({selectionModifier: action.selectionModifier});
+                });
+            } else {
+                this.set({
+                    selectionModifier: action.selectionModifier,
+                });
+            }
+        }
     },
 
     /**
@@ -194,7 +228,7 @@ var DataModel = Model.extend({
             throw new Error('Source is not set');
         }
         this.set({
-            source: action.source
+            source: action.source,
         });
     },
 
@@ -203,7 +237,7 @@ var DataModel = Model.extend({
             throw new Error('Type is not set');
         }
         this.set({
-            type: action.type
+            type: action.type,
         });
     },
 

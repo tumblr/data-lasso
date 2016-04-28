@@ -8,6 +8,7 @@ var helvetiker = require('three.regular.helvetiker');
 var SelectionHelper = require('./helpers/selection');
 var axisGeometry = require('./geometry/axis');
 var Mouse = require('./helpers/mouse');
+var Keyboard = require('./helpers/keyboard');
 var shaders = require('../templates/shaders.tpl');
 var dotTexture = require('./texture/dot');
 var store = require('../store');
@@ -40,9 +41,11 @@ var Graph = class Graph {
     constructor(options) {
         _.extend(this, graphOptions);
         this.options = options;
-        window.addEventListener('resize', _.bind(this.onWindowResize, this));
+
         this.setUpElement();
         this.setUpTHREE();
+        this.setUpEventListeners();
+
         return this;
     }
 
@@ -51,6 +54,25 @@ var Graph = class Graph {
             id: this.options.id
         });
         this.el = this.$el[0];
+    }
+
+    setUpEventListeners() {
+        window.addEventListener('resize', this.onWindowResize.bind(this));
+        store.on('change:mode change:selectionModifier', this.onModeChange.bind(this));
+    }
+
+    onModeChange() {
+        var mode = store.get('mode');
+        var selectionModifier = store.get('selectionModifier');
+        var classList = 'mode-' + mode;
+
+        if (mode === 'selection') {
+            if (selectionModifier) {
+                classList += '-' + store.get('selectionModifier');
+            }
+        }
+
+        this.el.classList = classList;
     }
 
     /**
@@ -70,6 +92,9 @@ var Graph = class Graph {
 
         // Mouse vector
         this.mouse = new Mouse(this.$el);
+
+        // Keyboard helper
+        this.keyboard = new Keyboard();
 
         // Renderer
         this.renderer = new THREE.WebGLRenderer({alpha: true});

@@ -26,7 +26,7 @@ const UrlForm = React.createClass({
     handleFormSubmission: function(e) {
         e.preventDefault();
 
-        var url = e.target[0].value;
+        var url = e.target[1].value;
         if (url) {
             this.setState({
                 loading: true,
@@ -57,18 +57,51 @@ const UrlForm = React.createClass({
     },
 
     render: function() {
-        let inputStyle = {
-            border: this.state.error ? '1px solid red' : '',
-        };
         return (
             <form onSubmit={this.handleFormSubmission} className="url-form">
-                <div>
-                    <input style={inputStyle} type="text" placeholder="URL to a file" className="text-input url-input"/>
-                </div>
+                <UrlField error={this.state.error} />
                 <div className="row">
                     <button className="button red">{this.state.loading ? 'LOADING...' : 'UPLOAD'}</button>
                 </div>
             </form>
+        )
+    }
+});
+
+/**
+ * ## UrlField React Component
+ *
+ * Helps with rendering the URL input field, as well as logic
+ * to pre-populate that field with a test dataset
+ */
+const UrlField = React.createClass({
+    getInitialState: function() {
+        return {
+            url: '',
+        }
+    },
+
+    handleTestDatasetClick: function() {
+        this.setState({
+            url: 'http://tumblr.github.io/data-lasso/samples/UCS_Satellite_Database.csv',
+        });
+    },
+
+    handleValueChange: function (e) {
+        this.setState({
+            url: e.target.value,
+        });
+    },
+
+    render: function() {
+        let inputStyle = {
+            border: this.props.error ? '1px solid red' : '',
+        };
+        return (
+            <div>
+                <button className="button transparent" onClick={this.handleTestDatasetClick}>Use sample dataset</button>
+                <input style={inputStyle} onChange={this.handleValueChange} value={this.state.url} type="text" placeholder="URL to a file" className="text-input url-input"/>
+            </div>
         )
     }
 });

@@ -4,6 +4,7 @@ var _ = require('lodash');
 var THREE = require('three');
 var store = require('../../store');
 var dispatcher = require('../../dispatcher');
+var Frustum = require('../geometry/frustum');
 
 /**
  * ## Selection Helper
@@ -41,23 +42,27 @@ var SelectionHelper = class {
         this.camera = camera;
         this.scene = scene;
         this.mouse = mouse;
-        this.selectionMode = false;
 
-        this.mouse.on('datalasso:mouse:move', _.bind(this.onMouseMove, this));
-        this.mouse.on('datalasso:mouse:down', _.bind(this.onMouseDown, this));
+        this.mouse.on('datalasso:mouse:move', this.onMouseMove.bind(this));
+        this.mouse.on('datalasso:mouse:down', this.onMouseDown.bind(this));
 
-        store.on('change:entries', _.bind(this.onEntriesChange, this));
+        store.on('change:mode', this.onModeChange.bind(this));
 
-        document.addEventListener('keyup', _.bind(this.onDocumentKeyUp, this), false);
+        this.lassoPoints = [];
+        this.lassoLineSegments = [];
     }
 
-    onEntriesChange () {
-        this.entries = store.get('entries');
+    onModeChange () {
+        if (store.get('mode') === 'view') {
+            this.cancelSelection();
+        }
     }
 
     /**
      * Update the projection plane - an invisible
      * plane between the camera and the graph
+     *
+     * Called by the graph when 3d space is moved, rotated or scaled.
      */
     updateProjectionPlane () {
         if (!this.projectionPlane) {
@@ -98,25 +103,15 @@ var SelectionHelper = class {
         return false;
     }
 
-    /**
-     * DOM Event Listeners
-     */
-    onDocumentKeyUp (e) {
-        switch (e.keyCode) {
-            case 32:
-                this.startSelectionMode();
-                break;
-
-            case 27:
-                this.stopSelectionMode();
-                break;
-        }
-    }
-
     onMouseDown (e) {
         switch (e.button) {
             case THREE.MOUSE.LEFT:
-                if (this.selectionMode) {
+                if (store.get('mode') === 'selection') {
+                    if (!store.get('selectionInProgress')) {
+                        this.lassoPoints = [];
+                        this.lassoLineSegments = [];
+                        dispatcher.dispatch({actionType: 'selection-started'});
+                    }
                     this.addLassoPoint(e.vector);
                 }
                 break;
@@ -124,39 +119,10 @@ var SelectionHelper = class {
     }
 
     onMouseMove (e) {
-        if (this.selectionMode) {
+        if (store.get('mode') === 'selection') {
             this.drawPreviewLine(e.vector);
         }
     }
-
-    /**
-     * ### Start Selection Mode
-     *
-     * Sets internal flag, cleans the state for a new
-     * selection and turns off orbit camera.
-     */
-    startSelectionMode () {
-        this.selectionMode = true;
-
-        this.lassoPoints = [];
-        this.lassoLineSegments = [];
-
-        dispatcher.dispatch({actionType: 'selection-started'});
-    }
-
-    /**
-     * ### Stop Selection Mode
-     *
-     * Brings orbit camera back on
-     */
-    stopSelectionMode () {
-        this.selectionMode = false;
-
-        this.cancelSelection();
-
-        dispatcher.dispatch({actionType: 'selection-stopped'});
-    }
-
 
     /**
      * ### Draw Preview Line
@@ -234,6 +200,17 @@ var SelectionHelper = class {
     }
 
     /**
+     * ### Cancel Selection
+     *
+     * Clean up if selection ended mid flight
+     */
+    cancelSelection () {
+        this.clearPreviewLine();
+        this.removeLassoLineSegments();
+
+    }
+
+    /**
      * ### Finalize Selection
      *
      * Coordinate end of selection. Remove leftover
@@ -246,19 +223,8 @@ var SelectionHelper = class {
         // Remove the drawn lasso 100ms later to give user visual feedback
         _.delay(_.bind(this.removeLassoLineSegments, this), 100);
 
-        this.stopSelectionMode();
-
-        this.performSelection();
-    }
-
-    /**
-     * ### Cancel Selection
-     *
-     * Clean up if selection ended mid flight
-     */
-    cancelSelection () {
-        this.clearPreviewLine();
-        this.removeLassoLineSegments();
+        this.performSelection(store.get('selectionModifier'));
+        dispatcher.dispatch({actionType: 'selection-stopped'});
     }
 
     /**
@@ -278,9 +244,11 @@ var SelectionHelper = class {
      * Remove polygonal lasso that was drawn during selection
      */
     removeLassoLineSegments () {
-        _.each(this.lassoLineSegments, function (segment) {
+        _.forEach(this.lassoLineSegments, (segment) => {
             this.scene.remove(segment);
-        }, this);
+        });
+        this.lassoPoints = [];
+        this.lassoLineSegments = [];
     }
 
     /**
@@ -291,86 +259,49 @@ var SelectionHelper = class {
      *
      * If initially selection yields no results, construct reversed frustum
      * and try selection again.
+     *
+     * @param selectionModifier - Selection modifier at the time of the selection
      */
-    performSelection () {
-        var frustum = this.constructFrustum();
-        var selectedEntries = this.findEntriesInsideFrustum(frustum);
+    performSelection (selectionModifier) {
+        var result = [];
 
-        if (!selectedEntries.length) {
-            // Construct reversed frustum
-            frustum = this.constructFrustum(true);
+        switch (selectionModifier) {
+            case 'add':
+                var addedEntries = this.getSelectedEntries(store.get('entries'));
+                result = _.uniq(_.concat(store.get('selectedEntries'), addedEntries));
+                break;
+
+            case 'subtract':
+                var removedEntries = this.getSelectedEntries(store.get('entries'));
+                var originalSelection = store.get('selectedEntries');
+                result = _.without(originalSelection, ...removedEntries);
+                break;
+
+            default:
+                result = this.getSelectedEntries(store.get('entries'));
         }
 
-        selectedEntries = this.findEntriesInsideFrustum(frustum);
-
-        dispatcher.dispatch({actionType: 'selection-made', selectedEntries: selectedEntries});
+        dispatcher.dispatch({
+            actionType: 'selection-made',
+            selectedEntries: result,
+        });
     }
 
     /**
-     * ### Construct Frustum
+     * ## Get Selected Entries
      *
-     * Construct frustum-like structure that consists
-     * of four planes describing the selection
+     * Perform selection in a set of items
      *
-     * @param inverse - when set to true, frustum will be built in reverse order and will have inversed normals
+     * @param {Array} entries - Array of entries which we will be checking against matching the selection
      */
-    constructFrustum (inverse) {
-        inverse = inverse || false;
-
-        var frustum = [];
-
-        if (!inverse) {
-            frustum.push(new THREE.Plane().setFromCoplanarPoints(this.lassoPoints[0], this.camera.position, this.lassoPoints[1]));
-            frustum.push(new THREE.Plane().setFromCoplanarPoints(this.lassoPoints[1], this.camera.position, this.lassoPoints[2]));
-            frustum.push(new THREE.Plane().setFromCoplanarPoints(this.lassoPoints[2], this.camera.position, this.lassoPoints[3]));
-            frustum.push(new THREE.Plane().setFromCoplanarPoints(this.lassoPoints[3], this.camera.position, this.lassoPoints[0]));
-        } else {
-            frustum.push(new THREE.Plane().setFromCoplanarPoints(this.lassoPoints[1], this.camera.position, this.lassoPoints[0]));
-            frustum.push(new THREE.Plane().setFromCoplanarPoints(this.lassoPoints[2], this.camera.position, this.lassoPoints[1]));
-            frustum.push(new THREE.Plane().setFromCoplanarPoints(this.lassoPoints[3], this.camera.position, this.lassoPoints[2]));
-            frustum.push(new THREE.Plane().setFromCoplanarPoints(this.lassoPoints[0], this.camera.position, this.lassoPoints[3]));
+    getSelectedEntries (entries) {
+        var frustum = new Frustum(this.camera.position, this.lassoPoints);
+        var result = frustum.findEntriesInsideFrustum(entries);
+        if (!result.length) {
+            frustum.invert();
         }
-
-        return frustum;
-    }
-
-    /**
-     * ### Find Entries Inside Frustum
-     *
-     * Go over the graph's entries and check what is inside
-     * the frustum of users's selection
-     *
-     * @param frustum - frustum-like object
-     * @returns {Array} of selected entry ids
-     */
-    findEntriesInsideFrustum (frustum) {
-        var selected = [];
-
-        _.each(this.entries, function (entry) {
-            if (this.isPointInsideFrustum(new THREE.Vector3(entry.x, entry.y, entry.z), frustum)) {
-                selected.push(entry.__id);
-            }
-        }, this);
-
-        return selected;
-    }
-
-    /**
-     * Check if entry is inside the frustum by checking distance
-     * to every frustum plane.
-     *
-     * Distance from a point to a plain is negative if the
-     * point is 'inside' the plane (on the back side of the plane)
-     */
-    isPointInsideFrustum (point, frustum) {
-        for (var i = 0; i < frustum.length; i++) {
-            var distance = frustum[i].distanceToPoint(point);
-
-            if (distance > 0) {
-                return false;
-            }
-        }
-        return true;
+        result = frustum.findEntriesInsideFrustum(entries);
+        return result;
     }
 };
 

@@ -40,10 +40,22 @@ module.exports = {
 
     /**
      * UI mode. Currently has two possible values:
-     *  - 'normal'
+     *  - 'view'
      *  - 'selection'
      */
-    mode: 'normal',
+    mode: 'view',
+
+    /**
+     * Selection modifier - adding or subtracting from current selection
+     *  - 'add'
+     *  - 'subtract'
+     */
+    selectionModifier: null,
+
+    /**
+     * Selection in progress flag
+     */
+    selectionInProgress: false,
 
     /**
      * Object containing mappings of attributes to axes

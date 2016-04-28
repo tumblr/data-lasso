@@ -30,7 +30,7 @@ var ModeIndicator = React.createClass({
      */
     getCopyForMode: function(mode) {
         switch (mode) {
-            case 'normal':
+            case 'view':
                 return {
                     header: 'View mode',
                     hint: '(SPACEBAR for selection mode)',
