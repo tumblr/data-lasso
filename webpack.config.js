@@ -5,11 +5,9 @@ var webpack = require('webpack');
 var autoprefixer = require('autoprefixer');
 
 /**
- * # Build process for Data Lasso
+ * # Webpack Build Process for Data Lasso
  *
- * `default` task build Data Lasso and serves it up locally
- *
- * Pass --production to build data lasso only
+ * Run with `--production` to build minified production ready distributive
  */
 
 var production = process.argv.indexOf('--production');
