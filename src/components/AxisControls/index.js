@@ -1,5 +1,6 @@
 'use strict';
 
+var $ = require('jquery');
 var _ = require('lodash');
 var store = require('../../store');
 var dispatcher = require('../../dispatcher');

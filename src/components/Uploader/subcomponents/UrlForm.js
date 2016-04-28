@@ -1,5 +1,6 @@
 'use strict';
 
+const $ = require('jquery');
 const React = require('react');
 
 /**
@@ -83,7 +84,7 @@ const UrlField = React.createClass({
 
     handleTestDatasetClick: function() {
         this.setState({
-            url: 'http://tumblr.github.io/data-lasso/samples/UCS_Satellite_Database.csv',
+            url: '//tumblr.github.io/data-lasso/samples/UCS_Satellite_Database.csv',
         });
     },
 

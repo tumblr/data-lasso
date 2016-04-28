@@ -9,7 +9,8 @@ var SelectionHelper = require('./helpers/selection');
 var axisGeometry = require('./geometry/axis');
 var Mouse = require('./helpers/mouse');
 var Keyboard = require('./helpers/keyboard');
-var shaders = require('../templates/shaders.tpl');
+var vertexShader = require('./shaders/vertex.glsl');
+var fragmentShader = require('./shaders/fragment.glsl');
 var dotTexture = require('./texture/dot');
 var store = require('../store');
 var dispatcher = require('../dispatcher');
@@ -81,8 +82,6 @@ var Graph = class Graph {
     setUpTHREE() {
         THREE.typeface_js.loadFace(helvetiker);
 
-        this.$el.append(shaders());
-
         // Scene
         this.scene = new THREE.Scene();
 
@@ -126,15 +125,13 @@ var Graph = class Graph {
             texture: {type: 't', value: dotTexture()},
         };
         this.shaderMaterial = new THREE.ShaderMaterial({
-            uniforms:       shaderUniforms,
-            attributes:     shaderAttributes,
-
-            vertexShader:   this.$el.find('#vertexshader')[0].textContent,
-            fragmentShader: this.$el.find('#fragmentshader')[0].textContent,
-
-            blending:       THREE.AdditiveBlending,
-            depthTest:      false,
-            transparent:    true,
+            uniforms: shaderUniforms,
+            attributes: shaderAttributes,
+            vertexShader: vertexShader,
+            fragmentShader: fragmentShader,
+            blending: THREE.AdditiveBlending,
+            depthTest: false,
+            transparent: true,
         });
 
         // Raycaster
