@@ -51,10 +51,8 @@ var Graph = class Graph {
     }
 
     setUpElement() {
-        this.$el = $('<div></div>', {
-            id: this.options.id
-        });
-        this.el = this.$el[0];
+        this.el = document.createElement('div');
+        this.el.id = this.options.id;
     }
 
     setUpEventListeners() {
@@ -90,7 +88,7 @@ var Graph = class Graph {
         this.camera.position.set(this.options.graphSize * 2, this.options.graphSize * 2, this.options.graphSize * 2);
 
         // Mouse vector
-        this.mouse = new Mouse(this.$el);
+        this.mouse = new Mouse(this.el);
 
         // Keyboard helper
         this.keyboard = new Keyboard();
@@ -99,10 +97,10 @@ var Graph = class Graph {
         this.renderer = new THREE.WebGLRenderer({alpha: true});
         this.renderer.setClearColor(0x32303d, 1);
         this.renderer.setSize(window.innerWidth, window.innerHeight);
-        this.$el[0].appendChild(this.renderer.domElement);
+        this.el.appendChild(this.renderer.domElement);
 
         // Orbit Controls
-        this.controls = new OrbitControls(this.camera, this.$el[0]);
+        this.controls = new OrbitControls(this.camera, this.el);
         this.controls.damping = 0.2;
         this.controls.addEventListener('change', _.bind(this.onControlsUpdate, this));
         this.controls.target = new THREE.Vector3(this.options.graphSize / 2, this.options.graphSize / 2, this.options.graphSize / 2);
