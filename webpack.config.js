@@ -10,7 +10,7 @@ var autoprefixer = require('autoprefixer');
  * Run with `--production` to build minified production ready distributive
  */
 
-var production = process.argv.indexOf('--production');
+var production = (process.argv.indexOf('--production') >= 0);
 
 var webpackConfig = {
     entry: path.join(__dirname, 'src/index.js'),
@@ -26,7 +26,7 @@ var webpackConfig = {
         loaders: [
             {
                 test: /\.scss$/,
-                loader: 'style-loader!css-loader!postcss-loader!sass-loader',
+                loader: 'style-loader?sourceMap!css-loader?sourceMap!postcss-loader!sass-loader',
             },
             {
                 test: /\.glsl$/,
@@ -47,7 +47,7 @@ var webpackConfig = {
         contentBase: path.join(__dirname, 'public'),
     },
     sassLoader: {
-        sourcemap: !production,
+        sourceMap: !production,
     },
     postcss: [
         autoprefixer({
