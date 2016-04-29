@@ -12,6 +12,14 @@ var autoprefixer = require('autoprefixer');
 
 var production = (process.argv.indexOf('--production') >= 0);
 
+function getStylesheetLoader() {
+    if (production) {
+        return 'style-loader!css-loader!postcss-loader!sass-loader';
+    } else {
+        return 'style-loader?sourceMap!css-loader?sourceMap!postcss-loader!sass-loader?sourceMap';
+    }
+}
+
 var webpackConfig = {
     entry: path.join(__dirname, 'src/index.js'),
     output: {
@@ -26,7 +34,7 @@ var webpackConfig = {
         loaders: [
             {
                 test: /\.scss$/,
-                loader: 'style-loader?sourceMap!css-loader?sourceMap!postcss-loader!sass-loader',
+                loader: getStylesheetLoader(),
             },
             {
                 test: /\.glsl$/,
@@ -45,9 +53,6 @@ var webpackConfig = {
     devtool: production ? '' : 'inline-source-map',
     devServer: {
         contentBase: path.join(__dirname, 'public'),
-    },
-    sassLoader: {
-        sourceMap: !production,
     },
     postcss: [
         autoprefixer({
