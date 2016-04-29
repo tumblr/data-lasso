@@ -9,7 +9,8 @@ var SelectionHelper = require('./helpers/selection');
 var axisGeometry = require('./geometry/axis');
 var Mouse = require('./helpers/mouse');
 var Keyboard = require('./helpers/keyboard');
-var shaders = require('../templates/shaders.tpl');
+var vertexShader = require('./shaders/vertex.glsl');
+var fragmentShader = require('./shaders/fragment.glsl');
 var dotTexture = require('./texture/dot');
 var store = require('../store');
 var dispatcher = require('../dispatcher');
@@ -50,10 +51,8 @@ var Graph = class Graph {
     }
 
     setUpElement() {
-        this.$el = $('<div></div>', {
-            id: this.options.id
-        });
-        this.el = this.$el[0];
+        this.el = document.createElement('div');
+        this.el.id = this.options.id;
     }
 
     setUpEventListeners() {
@@ -81,8 +80,6 @@ var Graph = class Graph {
     setUpTHREE() {
         THREE.typeface_js.loadFace(helvetiker);
 
-        this.$el.append(shaders());
-
         // Scene
         this.scene = new THREE.Scene();
 
@@ -91,7 +88,7 @@ var Graph = class Graph {
         this.camera.position.set(this.options.graphSize * 2, this.options.graphSize * 2, this.options.graphSize * 2);
 
         // Mouse vector
-        this.mouse = new Mouse(this.$el);
+        this.mouse = new Mouse(this.el);
 
         // Keyboard helper
         this.keyboard = new Keyboard();
@@ -100,10 +97,10 @@ var Graph = class Graph {
         this.renderer = new THREE.WebGLRenderer({alpha: true});
         this.renderer.setClearColor(0x32303d, 1);
         this.renderer.setSize(window.innerWidth, window.innerHeight);
-        this.$el[0].appendChild(this.renderer.domElement);
+        this.el.appendChild(this.renderer.domElement);
 
         // Orbit Controls
-        this.controls = new OrbitControls(this.camera, this.$el[0]);
+        this.controls = new OrbitControls(this.camera, this.el);
         this.controls.damping = 0.2;
         this.controls.addEventListener('change', _.bind(this.onControlsUpdate, this));
         this.controls.target = new THREE.Vector3(this.options.graphSize / 2, this.options.graphSize / 2, this.options.graphSize / 2);
@@ -126,15 +123,13 @@ var Graph = class Graph {
             texture: {type: 't', value: dotTexture()},
         };
         this.shaderMaterial = new THREE.ShaderMaterial({
-            uniforms:       shaderUniforms,
-            attributes:     shaderAttributes,
-
-            vertexShader:   this.$el.find('#vertexshader')[0].textContent,
-            fragmentShader: this.$el.find('#fragmentshader')[0].textContent,
-
-            blending:       THREE.AdditiveBlending,
-            depthTest:      false,
-            transparent:    true,
+            uniforms: shaderUniforms,
+            attributes: shaderAttributes,
+            vertexShader: vertexShader,
+            fragmentShader: fragmentShader,
+            blending: THREE.AdditiveBlending,
+            depthTest: false,
+            transparent: true,
         });
 
         // Raycaster

@@ -1,5 +1,6 @@
 'use strict';
 
+var $ = require('jquery');
 var _ = require('lodash');
 var React = require('react');
 var ReactDom = require('react-dom');
@@ -50,10 +51,8 @@ var DataLasso = class DataLasso {
      * Creates DOM element for Data Lasso
      */
     createElement () {
-        this.$el = $('<div></div>', {
-            class: 'datalasso-container'
-        });
-        this.el = this.$el[0];
+        this.el = document.createElement('div');
+        this.el.className = 'datalasso-container'
     }
 
     /**
@@ -75,7 +74,7 @@ var DataLasso = class DataLasso {
             result[name] = new module.constructor({
                 store: store,
                 dispatcher: dispatcher,
-                $container: this.$el,
+                container: this.el,
             });
         });
     }
@@ -89,10 +88,9 @@ var DataLasso = class DataLasso {
      * @returns {HTMLElement} - Element containing Data Lasso
      */
     render () {
-        styles.append();
         ReactDom.render(<DataLassoUI/>, this.el);
         this.graph = new Graph(this.options);
-        this.$el.append(this.graph.el);
+        this.el.appendChild(this.graph.el);
         return this.el;
     }
 };
