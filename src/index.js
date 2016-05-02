@@ -40,12 +40,11 @@ var DataLasso = class DataLasso {
 
         this.createElement();
 
-        if (this.modules) {
-            // We want to defer initialization of modules to give time for data lasso to start up
-            setTimeout(this.initializeModules.bind(this, this.modules))
-        }
-
         this.render();
+
+        if (this.modules) {
+            this.initializeModules(this.modules);
+        }
     }
 
     /**
@@ -92,7 +91,6 @@ var DataLasso = class DataLasso {
         ReactDom.render(<DataLassoUI/>, this.el);
         this.graph = new Graph(this.options);
         this.el.appendChild(this.graph.el);
-        return this.el;
     }
 };
 
