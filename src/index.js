@@ -41,7 +41,8 @@ var DataLasso = class DataLasso {
         this.createElement();
 
         if (this.modules) {
-            this.initializeModules(this.modules);
+            // We want to defer initialization of modules to give time for data lasso to start up
+            setTimeout(this.initializeModules.bind(this, this.modules))
         }
 
         this.render();
