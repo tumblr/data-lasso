@@ -40,11 +40,11 @@ var DataLasso = class DataLasso {
 
         this.createElement();
 
+        this.render();
+
         if (this.modules) {
             this.initializeModules(this.modules);
         }
-
-        this.render();
     }
 
     /**
@@ -91,7 +91,6 @@ var DataLasso = class DataLasso {
         ReactDom.render(<DataLassoUI/>, this.el);
         this.graph = new Graph(this.options);
         this.el.appendChild(this.graph.el);
-        return this.el;
     }
 };
 
