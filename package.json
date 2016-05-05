@@ -5,7 +5,7 @@
   "main": "build/datalasso.js",
   "scripts": {
     "start": "webpack-dev-server --port 3000 --inline --hot",
-    "build": "webpack --production"
+    "build": "webpack --production; webpack --production --minified"
   },
   "repository": {
     "type": "git",
