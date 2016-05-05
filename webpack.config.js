@@ -7,13 +7,13 @@ var autoprefixer = require('autoprefixer');
  *
  * Available arguments:
  *
- * -- production
+ * --production
  * Removes JS and CSS source maps from the output; Sets up `NODE_ENV` variable to`production`.
  *
- * -- watch
+ * --watch
  * Makes webpack watch for changes
  *
- * -- minified
+ * --minified
  * Passes output through UglifyJs plugin and builds into `datalasso.min.js`. For use
  * without commonjs modules, such as Data Lasso hosted on GitHub pages
  *
