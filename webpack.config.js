@@ -1,5 +1,3 @@
-'use strict';
-
 var path = require('path');
 var webpack = require('webpack');
 var autoprefixer = require('autoprefixer');
@@ -7,10 +5,23 @@ var autoprefixer = require('autoprefixer');
 /**
  * # Webpack Build Process for Data Lasso
  *
- * Run with `--production` to build minified production ready distributive
+ * Available arguments:
+ *
+ * --production
+ * Removes JS and CSS source maps from the output; Sets up `NODE_ENV` variable to`production`.
+ *
+ * --watch
+ * Makes webpack watch for changes
+ *
+ * --minified
+ * Passes output through UglifyJs plugin and builds into `datalasso.min.js`. For use
+ * without commonjs modules, such as Data Lasso hosted on GitHub pages
+ *
  */
 
 var production = (process.argv.indexOf('--production') >= 0);
+var minified = (process.argv.indexOf('--minified') >= 0);
+var watch = (process.argv.indexOf('--watch') >= 0);
 
 function getStylesheetLoader() {
     if (production) {
@@ -29,7 +40,7 @@ var webpackConfig = {
         publicPath: '/build/',
         path: production ? path.join(__dirname, 'build') : path.join(__dirname, 'public/build'),
     },
-    watch: !production,
+    watch: watch,
     module: {
         loaders: [
             {
@@ -61,19 +72,24 @@ var webpackConfig = {
             ],
         }),
     ],
+    plugins: [],
 };
 
 if (production) {
-    console.log('PRODUCTION BUILD');
-    webpackConfig.plugins = [
-        new webpack.optimize.UglifyJsPlugin(),
-        new webpack.DefinePlugin({
-            'process.env': {
-                NODE_ENV: JSON.stringify('production'),
-            },
-        }),
-    ];
+    webpackConfig.plugins.push(new webpack.DefinePlugin({
+        'process.env': {
+            NODE_ENV: JSON.stringify('production'),
+        },
+    }));
 }
 
+if (minified) {
+    webpackConfig.plugins.push(new webpack.optimize.UglifyJsPlugin({
+        compress: {
+            warnings: false,
+        },
+    }));
+    webpackConfig.output.filename = 'datalasso.min.js';
+}
 
 module.exports = webpackConfig;
