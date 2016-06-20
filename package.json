@@ -49,6 +49,7 @@
     "react-dom": "^15.0.1",
     "three": "^0.71.1",
     "three-orbit-controls": "^71.0.0",
+    "three-stereo-effect": "^1.0.13",
     "three.regular.helvetiker": "^1.0.0"
   }
 }

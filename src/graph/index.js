@@ -15,6 +15,7 @@ var dotTexture = require('./texture/dot');
 var store = require('../store');
 var dispatcher = require('../dispatcher');
 
+var StereoEffect = require('three-stereo-effect')(THREE);
 
 /**
  * ## Graph
@@ -87,6 +88,7 @@ var Graph = class Graph {
         this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, this.options.graphSize * 10);
         this.camera.position.set(this.options.graphSize * 2, this.options.graphSize * 2, this.options.graphSize * 2);
 
+
         // Mouse vector
         this.mouse = new Mouse(this.el);
 
@@ -98,6 +100,11 @@ var Graph = class Graph {
         this.renderer.setClearColor(0x32303d, 1);
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         this.el.appendChild(this.renderer.domElement);
+
+        // Stereo Effect 
+        this.stereoEffect = new StereoEffect(this.renderer);
+        this.stereoEffect.eyeSeparation = 1;
+        this.stereoEffect.setSize(window.innerWidth, window.innerHeight);
 
         // Orbit Controls
         this.controls = new OrbitControls(this.camera, this.el);
@@ -153,6 +160,7 @@ var Graph = class Graph {
 
     renderFrame() {
         this.handleRaycasting();
+        this.stereoEffect.render(this.scene, this.camera);
         this.renderer.render(this.scene, this.camera);
     }
 
