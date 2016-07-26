@@ -6,6 +6,11 @@ var dispatcher = require('../dispatcher');
 var dataFunctions = require('./data-functions');
 var initialState = require('./initial-state');
 
+var io = require('socket.io-client');
+var WebSocket = require('../web-socket.js');
+
+var p2p;
+
 /**
  * # Store
  *
@@ -22,7 +27,6 @@ var initialState = require('./initial-state');
  */
 
 var DataModel = Model.extend({
-
     defaults: initialState,
 
     initialize: function () {
@@ -37,9 +41,20 @@ var DataModel = Model.extend({
      * @param action {object} - Action dispatched with a dispatcher. Always has an `actionType`.
      */
     dispatchCallback: function (action) {
+        if (this.p2p) {
+            if (this.options.mode == 'master') {
+                this.p2p.emit('peer-msg', 'action data');
+            } else {
+                this.p2p.on('peer-msg', function(data) {
+                    console.log(data);
+                });
+            }
+        }
+
         switch (action.actionType) {
             case 'options-set':
                 this.options = action.options;
+                this.p2p = new WebSocket(this.options);
                 break;
 
             case 'file-uploaded':
@@ -170,7 +185,7 @@ var DataModel = Model.extend({
 
         this.set({
             entries: entries,
-            selectedEntries: selectedEntries,
+            selectedEntries: selectedEntries
         });
     },
 
@@ -266,7 +281,7 @@ var DataModel = Model.extend({
             selectedEntries: lastSnapshot.selectedEntries,
             snapshots: snapshots,
         });
-    },
+    }
 });
 
 module.exports = new DataModel();

@@ -32,6 +32,7 @@
     "babel-preset-es2015": "^6.6.0",
     "babel-preset-react": "^6.5.0",
     "css-loader": "^0.23.1",
+    "json-loader": "^0.5.4",
     "postcss-loader": "^0.8.2",
     "sass-loader": "^3.2.0",
     "shader-loader": "^1.1.4",
@@ -42,13 +43,19 @@
   "dependencies": {
     "backbone": "^1.2.3",
     "d3": "^3.5.6",
+    "ecstatic": "^1.4.1",
     "flux": "^2.1.1",
     "jquery": "^2.1.4",
     "lodash": "^4.11.1",
     "react": "^15.0.1",
     "react-dom": "^15.0.1",
+    "socket.io": "^1.4.8",
+    "socket.io-client": "^1.4.8",
+    "socket.io-p2p": "^2.2.0",
+    "socket.io-p2p-server": "^1.2.0",
     "three": "^0.71.1",
     "three-orbit-controls": "^71.0.0",
+    "three-stereo-effect": "^1.0.13",
     "three.regular.helvetiker": "^1.0.0"
   }
 }
