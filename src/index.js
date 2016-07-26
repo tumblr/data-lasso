@@ -33,9 +33,9 @@ var defaults = {
  */
 var DataLasso = class DataLasso {
     constructor (options) {
+        console.log('Mode: ' + this.getMode());
         this.modules = options.modules;
-        this.options = _.defaults(defaults, _.omit(options, 'modules'), this.defaults);
-
+        this.options = _.defaults(defaults, _.omit(options, 'modules'), this.defaults, {mode:this.getMode()});
         dispatcher.dispatch({actionType: 'options-set', options: this.options});
 
         this.createElement();
@@ -91,6 +91,17 @@ var DataLasso = class DataLasso {
         ReactDom.render(<DataLassoUI/>, this.el);
         this.graph = new Graph(this.options);
         this.el.appendChild(this.graph.el);
+    }
+
+    /**
+     * Parses the url to determine the mode:
+     *  - Master
+     *  - Client
+     */
+    getMode () {
+        if(window.location.search.length > 1) {
+            return window.location.search.split('=')[1];
+        }
     }
 };
 

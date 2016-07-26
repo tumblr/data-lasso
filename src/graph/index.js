@@ -160,7 +160,9 @@ var Graph = class Graph {
 
     renderFrame() {
         this.handleRaycasting();
-        this.stereoEffect.render(this.scene, this.camera);
+        if(store.options.mode == 'client') {
+            this.stereoEffect.render(this.scene, this.camera);
+        }
         this.renderer.render(this.scene, this.camera);
     }
 

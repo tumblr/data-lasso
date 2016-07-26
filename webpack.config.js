@@ -59,6 +59,10 @@ var webpackConfig = {
                     presets: ['es2015', 'react'],
                 },
             },
+            {
+                test: /\.json$/,
+                loader: 'json-loader'
+            }
         ],
     },
     devtool: production ? '' : 'inline-source-map',
@@ -73,6 +77,11 @@ var webpackConfig = {
         }),
     ],
     plugins: [],
+    node: {
+        fs: 'empty',
+        net: 'empty',
+        tls: 'empty'
+    }
 };
 
 if (production) {
