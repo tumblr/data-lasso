@@ -83,7 +83,7 @@ Feel free to open issue on github if you encounter a bug. If you want to get mor
 
 ### License
 
-Copyright 2015 Tumblr Inc.
+Copyright 2015-2019 Tumblr Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
